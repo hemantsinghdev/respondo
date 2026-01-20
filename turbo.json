@@ -2,8 +2,12 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
+    "build:assets": {
+      "outputs": ["src/assets/index.ts"],
+      "cache": true
+    },
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
+      "dependsOn": ["^build", "^db:generate", "^build:assets"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": ["DATABASE_URL"]
@@ -15,7 +19,7 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["^db:generate"],
+      "dependsOn": ["^db:generate", "^build:assets"],
       "cache": false,
       "persistent": true
     },

@@ -5,7 +5,10 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@app/*": ["./*"]
+    }
   },
   "include": [
     "**/*.ts",
@@ -13,7 +16,12 @@
     "next-env.d.ts",
     "globals.d.ts",
     "next.config.js",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../../packages/ui/src/components/visuals/TeamVisual.tsx",
+    "../../packages/ui/src/components/visuals/RAGVisual.tsx",
+    "../../packages/ui/src/components/visuals/StackVisual.tsx",
+    "../../packages/ui/src/components/visuals/DashboardVisual.tsx",
+    "../../packages/ui/src/components/visuals/ConnectivityVisual.tsx"
   ],
   "exclude": ["node_modules"]
 }

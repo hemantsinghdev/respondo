@@ -7,8 +7,9 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "postinstall": "turbo db:generate",
-    "db:generate": "turbo run db:generate"
+    "postinstall": "turbo db:generate && turbo build:assets",
+    "db:generate": "turbo run db:generate",
+    "build:assets": "turbo run build:assets"
   },
   "devDependencies": {
     "prettier": "^3.7.4",

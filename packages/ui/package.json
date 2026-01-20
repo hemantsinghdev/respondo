@@ -2,16 +2,15 @@
   "name": "@repo/ui",
   "version": "0.0.0",
   "private": true,
+  "scripts": {
+    "build:assets": "node scripts/build-assets.mjs"
+  },
   "exports": {
     "./globals.css": "./src/styles/globals.css",
     "./postcssConfig": "./postcss.config.mjs",
     "./components": "./src/components/index.ts",
-    "./lib/utils": "./src/lib/utils.ts"
-  },
-  "scripts": {
-    "lint": "eslint . --max-warnings 0",
-    "generate:component": "turbo gen react-component",
-    "check-types": "tsc --noEmit"
+    "./lib/utils": "./src/lib/utils.ts",
+    "./assets": "./src/assets/index.ts"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
