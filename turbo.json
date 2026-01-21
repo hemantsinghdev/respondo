@@ -25,7 +25,8 @@
     },
     "db:generate": {
       "cache": false,
-      "inputs": ["prisma/schema.prisma"]
+      "inputs": ["prisma/schema.prisma"],
+      "env": ["DATABASE_URL"]
     },
     "db:migrate:dev": {
       "cache": false,

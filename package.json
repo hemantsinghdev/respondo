@@ -7,7 +7,7 @@
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "check-types": "turbo run check-types",
-    "postinstall": "turbo db:generate && turbo build:assets",
+    "postinstall": "turbo build:assets",
     "db:generate": "turbo run db:generate",
     "build:assets": "turbo run build:assets"
   },
@@ -16,7 +16,7 @@
     "turbo": "^2.7.5",
     "typescript": "5.9.2"
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.28.1",
   "engines": {
     "node": ">=18"
   }

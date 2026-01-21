@@ -1,0 +1,24 @@
+{
+  "name": "@repo/auth",
+  "version": "0.0.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "auth:db:generate": "better-auth generate --output ./src/generated-auth-schema.prisma"
+  },
+  "devDependencies": {
+    "@better-auth/cli": "^1.4.17",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@types/pg": "^8.16.0",
+    "dotenv": "^17.2.3",
+    "eslint": "^9.39.1",
+    "prisma": "^7.2.0",
+    "typescript": "5.9.2"
+  },
+  "dependencies": {
+    "@repo/db": "workspace:*",
+    "better-auth": "^1.4.17"
+  }
+}
