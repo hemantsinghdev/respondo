@@ -2,7 +2,8 @@
   "name": "@repo/auth",
   "version": "0.0.0",
   "exports": {
-    ".": "./src/index.ts"
+    "./server": "./src/index.ts",
+    "./client": "./src/client.ts"
   },
   "scripts": {
     "auth:db:generate": "better-auth generate --output ./src/generated-auth-schema.prisma"

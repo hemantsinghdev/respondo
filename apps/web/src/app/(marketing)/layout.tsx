@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
-import { Assets } from "@repo/ui/assets";
+import { Images } from "@repo/ui/assets";
 import { Button } from "@repo/ui/components";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function LandingLayout({
   children,
@@ -15,14 +16,15 @@ export default function LandingLayout({
       <nav className="sticky top-0 z-50 border-b border-white/5 bg-[#0A0A0A]/80 backdrop-blur-md">
         <div className="container mx-auto flex h-20 items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            {/* Using your custom logo path */}
-            <Image
-              src={Assets.logos.long}
-              alt="Respondo Logo"
-              width={140}
-              height={40}
-              className="object-contain"
-            />
+            <Link href="/">
+              <Image
+                src={Images.logos.long}
+                alt="Respondo Logo"
+                width={140}
+                height={40}
+                className="object-contain"
+              />
+            </Link>
           </div>
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-slate-400">
             <a
@@ -39,15 +41,19 @@ export default function LandingLayout({
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              className="text-slate-300 hover:text-white hover:bg-white/5"
-            >
-              Login
-            </Button>
-            <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-105 transition-transform">
-              Get Started Free <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
+            <Link href="/login">
+              <Button
+                variant="ghost"
+                className="cursor-pointer text-slate-300 hover:text-white hover:bg-white/5"
+              >
+                Login
+              </Button>
+            </Link>
+            <Link href="/signup">
+              <Button className="cursor-pointer bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-[0_0_20px_rgba(34,211,238,0.3)] hover:scale-105 transition-transform">
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </div>
         </div>
       </nav>
@@ -60,7 +66,7 @@ export default function LandingLayout({
           <div className="flex flex-col md:flex-row justify-between items-start gap-16">
             <div className="max-w-xs">
               <Image
-                src={Assets.logos.long}
+                src={Images.logos.long}
                 alt="Respondo"
                 width={120}
                 height={30}

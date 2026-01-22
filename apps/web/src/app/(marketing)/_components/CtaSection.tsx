@@ -1,5 +1,6 @@
 import { Button } from "@repo/ui/components";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
 export default function CtaSection() {
@@ -14,12 +15,14 @@ export default function CtaSection() {
           Join the businesses using Respondo to provide sensational support at a
           sensible price.
         </p>
-        <Button
-          size="lg"
-          className="bg-white text-black hover:bg-cyan-400 hover:text-black h-16 px-12 rounded-full font-black text-xl transition-all"
-        >
-          SIGN UP FOR FREE <ArrowRight className="ml-3 h-6 w-6" />
-        </Button>
+        <Link href="/signup">
+          <Button
+            size="lg"
+            className="cursor-pointer bg-white text-black hover:bg-cyan-400 hover:text-black h-16 px-12 rounded-full font-black text-xl transition-all"
+          >
+            SIGN UP FOR FREE <ArrowRight className="ml-3 h-6 w-6" />
+          </Button>
+        </Link>
         <p className="mt-6 text-sm text-slate-500">
           No credit card required. Cancel anytime.
         </p>

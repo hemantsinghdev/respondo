@@ -1,0 +1,148 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema } from "@app/lib/validations/auth";
+import { Button, Input, Label } from "@repo/ui/components";
+import { authClient } from "@repo/auth/client";
+import { useState } from "react";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { cn } from "@repo/ui/lib/utils";
+import { useRouter } from "next/navigation";
+
+export function SignupForm() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+    mode: "onChange",
+  });
+
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    await authClient.signUp.email(
+      {
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      },
+      {
+        onSuccess: (ctx) => {
+          router.push("/dashboard");
+        },
+        onError: (ctx) => {
+          router.push(`?error=${ctx.error.message}`);
+        },
+      },
+    );
+    setLoading(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-4">
+      <div className="relative mb-8">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-white/5" />
+        </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-[#121212] px-2 text-slate-500">Or use email</span>
+        </div>
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold text-slate-400 ml-1">
+          Full Name
+        </Label>
+        <Input
+          {...register("name")}
+          className={cn(
+            "bg-black/40 border-white/5 focus:border-cyan-500/50 transition-all h-11 text-white placeholder:text-slate-700",
+            errors.name && "border-red-500/50 focus:border-red-500",
+          )}
+        />
+        {errors.name && (
+          <span className="flex items-center text-[11px] text-red-400 ml-1 animate-in slide-in-from-top-1">
+            <AlertCircle className="w-3 h-3 mr-1" />{" "}
+            {errors.name.message as string}
+          </span>
+        )}
+      </div>
+
+      <div className="space-y-1.5">
+        <Label className="text-xs font-semibold text-[#94A3B8] ml-1">
+          Email
+        </Label>
+        <Input
+          type="email"
+          {...register("email")}
+          className={cn(
+            "bg-black/40 border-white/5 focus:ring-1 focus:ring-cyan-500/30 transition-all h-11 text-white",
+            errors.email && "border-red-500/50",
+          )}
+        />
+        {errors.email && (
+          <p className="text-[10px] text-red-400 ml-1">
+            {errors.email.message as string}
+          </p>
+        )}
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold text-[#94A3B8] ml-1">
+            Password
+          </Label>
+          <Input
+            type="password"
+            {...register("password")}
+            className={cn(
+              "bg-black/40 border-white/5 focus:ring-1 focus:ring-cyan-500/30 transition-all h-11 text-white",
+              errors.password && "border-red-500/50",
+            )}
+          />
+          {errors.password && (
+            <p className="text-[10px] text-red-400 ml-1">
+              {errors.password.message as string}
+            </p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold text-[#94A3B8] ml-1">
+            Confirm
+          </Label>
+          <Input
+            type="password"
+            {...register("confirmPassword")}
+            className={cn(
+              "bg-black/40 border-white/5 focus:ring-1 focus:ring-cyan-500/30 transition-all h-11 text-white",
+              errors.confirmPassword && "border-red-500/50",
+            )}
+          />
+          {errors.confirmPassword && (
+            <p className="text-[10px] text-red-400 ml-1">
+              {errors.confirmPassword.message as string}
+            </p>
+          )}
+        </div>
+      </div>
+
+      <Button
+        type="submit"
+        disabled={loading}
+        className="cursor-pointer w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] text-white font-bold h-12 rounded-xl transition-all active:scale-[0.98]"
+      >
+        {loading ? (
+          <Loader2 className="animate-spin" />
+        ) : (
+          "Complete Registration"
+        )}
+      </Button>
+    </form>
+  );
+}
