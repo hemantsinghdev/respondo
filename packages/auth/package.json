@@ -2,7 +2,7 @@
   "name": "@repo/auth",
   "version": "0.0.0",
   "exports": {
-    "./server": "./src/index.ts",
+    "./server": "./src/server.ts",
     "./client": "./src/client.ts"
   },
   "scripts": {
