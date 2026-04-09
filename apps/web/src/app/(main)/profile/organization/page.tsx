@@ -1,4 +1,4 @@
-import { Building2, Plus } from "lucide-react";
+import { Building2, Plus } from "@repo/ui/icons";
 
 export default function OrganizationPage() {
   return (

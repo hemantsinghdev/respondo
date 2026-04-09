@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useSidebarStore } from "@app/lib/store/sidebarStore";
+import { useConfirmStore } from "@app/lib/store/confirmStore";
 import { Images } from "@repo/ui/assets";
 import { usePathname } from "next/navigation";
 import {
@@ -11,7 +12,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-} from "lucide-react";
+} from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils"; // Standard ShadCN utility
 
 const navItems = [
@@ -22,6 +23,20 @@ const navItems = [
 export function Sidebar({ onLogout }: { onLogout: () => void }) {
   const pathname = usePathname();
   const { isCollapsed, toggle } = useSidebarStore();
+  const { openConfirm } = useConfirmStore();
+
+  const handleLogoutClick = () => {
+    openConfirm({
+      title: "End Session?",
+      description:
+        "You'll need to re-authenticate to access your multi-channel inbox.",
+      actionLabel: "Log Out",
+      variant: "warning",
+      onConfirm: () => {
+        onLogout();
+      },
+    });
+  };
 
   return (
     <aside
@@ -90,7 +105,7 @@ export function Sidebar({ onLogout }: { onLogout: () => void }) {
       {/* Footer */}
       <div className="border-t border-white/5 p-3 space-y-2">
         <button
-          onClick={onLogout}
+          onClick={handleLogoutClick}
           className={cn(
             "flex w-full items-center rounded-xl py-2.5 text-sm font-medium text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors",
             isCollapsed ? "justify-center px-0" : "px-3 gap-3",

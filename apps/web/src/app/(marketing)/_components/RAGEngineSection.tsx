@@ -1,5 +1,5 @@
 import { RAGVisual } from "@repo/ui/components";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "@repo/ui/icons";
 import React from "react";
 
 export default function RAGEngineSection() {

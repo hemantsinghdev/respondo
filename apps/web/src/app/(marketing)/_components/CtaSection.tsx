@@ -1,5 +1,5 @@
 import { Button } from "@repo/ui/components";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight } from "@repo/ui/icons";
 import Link from "next/link";
 import React from "react";
 

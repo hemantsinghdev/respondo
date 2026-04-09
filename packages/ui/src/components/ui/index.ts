@@ -4,3 +4,11 @@ export { Card, CardContent } from "./card";
 export { Alert, AlertDescription } from "./alert";
 export { Input } from "./input";
 export { Label } from "./label";
+export {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./dialog";

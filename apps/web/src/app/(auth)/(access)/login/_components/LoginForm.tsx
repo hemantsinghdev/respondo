@@ -6,7 +6,7 @@ import { loginSchema } from "@app/lib/validations/auth";
 import { Button, Input, Label } from "@repo/ui/components";
 import { authClient } from "@repo/auth/client";
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2 } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 import { useRouter } from "next/navigation";
 
@@ -32,7 +32,7 @@ export function LoginForm() {
       },
       {
         onSuccess: (ctx) => {
-          router.push("/dashboard");
+          router.push("/dashboard?login=success");
         },
         onError: (ctx) => {
           router.push(`?error=${ctx.error.message}`);

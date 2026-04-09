@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Alert, AlertDescription } from "@repo/ui/components";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle } from "@repo/ui/icons";
 import { AccessAuthLayout } from "@app/components/AccessAuthLayout";
 import { LoginForm } from "./_components/LoginForm";
 import { SocialProviders } from "@app/components/SocialProviders";

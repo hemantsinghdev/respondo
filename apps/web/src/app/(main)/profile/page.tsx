@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@repo/auth/client";
-import { Mail, Shield, Calendar } from "lucide-react";
+import { Mail, Shield, Calendar } from "@repo/ui/icons";
 
 export default function BasicProfile() {
   const { data: session } = authClient.useSession();

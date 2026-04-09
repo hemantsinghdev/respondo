@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@repo/ui/components";
-import { BrainCircuit, Layers, Zap } from "lucide-react";
+import { BrainCircuit, Layers, Zap } from "@repo/ui/icons";
 import React from "react";
 
 export default function ValueTriptychSection() {

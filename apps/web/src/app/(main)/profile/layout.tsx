@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { User, Building2 } from "lucide-react";
+import { User, Building2 } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 
 const profileTabs = [

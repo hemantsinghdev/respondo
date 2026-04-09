@@ -1,0 +1,20 @@
+.respondo-toaster[data-sonner-toaster][data-expanded="true"] {
+  max-height: 60vh !important;
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column-reverse !important;
+  gap: 12px !important;
+  padding: 20px;
+  scrollbar-width: none; /* Firefox */
+}
+
+.respondo-toaster::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* Ensure the toasts don't look "squished" when stacking */
+.respondo-toaster [data-sonner-toast] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
