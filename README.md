@@ -127,8 +127,9 @@ We believe in clear communication, even in our docs. Explore the specific layers
 - [The Main Workspace & Dashboard](apps/web/src/app/%28main%29/README.md) — `apps/web/(main)`
 - [Identity, Onboarding & Access](apps/web/src/app/%28auth%29/README.md) — `apps/web/(auth)`
 - [Marketing & Landing Experience](apps/web/src/app/%28marketing%29/README.md) — `apps/web/(marketing)`
-- [Application Logic & Lib Layer](apps/web/src/lib/README.md) — `apps/web/lib`
+- [Infrastructure Layer](apps/web/src/lib/README.md) — `apps/web/lib`
 - [Core Auth Implementation](packages/auth/README.md) — `packages/auth`
+- [Email Implementation](packages/email/README.md) — `packages/email`
 - [Database Schema & Data Integrity](packages/db/README.md) — `packages/db`
 - [UI Library & Design Systems](packages/ui/README.md) — `packages/ui`
 - [Linting & Code Quality Standards](packages/eslint-config/README.md) — `packages/eslint-config`

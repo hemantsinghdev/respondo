@@ -25,10 +25,19 @@ Respondo relies on this package to orchestrate the entire identity lifecycle:
 
 ## 🗄 Database & Persistence
 
-To maintain a single source of truth, `@repo/auth` is tightly integrated with our database layer:
+To maintain a single source of truth, `@repo/auth` is tightly integrated with our database layer and dictates the required schema for identity management.
 
-- **Prisma Adapter**: The package consumes `@repo/db` to persist user profiles, accounts, and session data directly into the shared PostgreSQL instance.
-- **Data Alignment**: This ensures that when a user signs up, their profile is instantly available to the ticketing and organization systems without synchronization delays.
+### Schema Generation
+
+Because we use **Better Auth**, the authentication schema is managed here and then synchronized with our Prisma setup.
+
+- **Generate Schema**: Run `pnpm auth:db:generate` to produce the `generated-auth-schema.prisma` file based on the current auth configuration.
+- **Integration**: This generated schema is then consumed by `@repo/db` to ensure the PostgreSQL instance supports all necessary tables for users, sessions, and accounts.
+
+### Data Alignment
+
+- **Prisma Adapter**: The package consumes `@repo/db` to persist data directly into the shared PostgreSQL instance.
+- **Instant Availability**: This ensures that when a user signs up, their profile is instantly available to the ticketing and organization systems without synchronization delays.
 
 ---
 

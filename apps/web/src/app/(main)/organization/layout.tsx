@@ -4,9 +4,9 @@ import { usePathname } from "next/navigation";
 import { User, Building2 } from "@repo/ui/icons";
 import { FloatingHeader } from "@app/components/FloatingHeader";
 
-const profileTabs = [{ name: "Basic Profile", href: "/profile", icon: User }];
+const profileTabs = [{ name: "Basic", href: "/organization", icon: Building2 }];
 
-export default function ProfileLayout({
+export default function OrganizationLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export default function ProfileLayout({
       <FloatingHeader
         tabs={profileTabs}
         title="Account Settings"
-        topOffset="top-0"
+        topOffset="top-6"
         maxWidth="max-w-5xl"
       />
 

@@ -12,12 +12,14 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Building2,
 } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils"; // Standard ShadCN utility
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Profile", href: "/profile", icon: User },
+  { name: "Organization", href: "/organization", icon: Building2 },
 ];
 
 export function Sidebar({ onLogout }: { onLogout: () => void }) {
