@@ -1,9 +1,10 @@
-import * as Generated from "./generated";
+import shortLogo from "./images/respondo-short-logo.png";
+import longLogo from "./images/respondo-long-logo.png";
 
 export const Images = {
   logos: {
-    long: Generated.RESPONDO_LONG_LOGO,
-    short: Generated.RESPONDO_SHORT_LOGO,
+    long: longLogo,
+    short: shortLogo,
   },
 } as const;
 

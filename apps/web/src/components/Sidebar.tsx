@@ -54,18 +54,24 @@ export function Sidebar({ onLogout }: { onLogout: () => void }) {
           isCollapsed ? "justify-center px-0" : "gap-3",
         )}
       >
-        <div className="relative h-9 w-9 shrink-0">
-          <Image
-            src={Images.logos.short}
-            alt="Logo"
-            fill
-            className="object-contain"
-          />
-        </div>
-        {!isCollapsed && (
-          <span className="text-xl font-bold tracking-tighter text-white animate-in fade-in zoom-in-95 duration-300">
-            Respondo
-          </span>
+        {isCollapsed ? (
+          <div className="relative h-9 w-9 shrink-0">
+            <Image
+              src={Images.logos.short}
+              alt="Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
+        ) : (
+          <div className="relative h-9 w-full shrink-0">
+            <Image
+              src={Images.logos.long}
+              alt="Logo"
+              fill
+              className="object-contain"
+            />
+          </div>
         )}
       </div>
 

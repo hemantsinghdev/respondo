@@ -2,7 +2,10 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { prisma } from "@repo/db";
-import { sendVerificationEmail } from "@repo/email/templates";
+import {
+  sendDeleteVerificationEmail,
+  sendUserVerificationEmail,
+} from "@repo/email/services";
 
 export const auth = betterAuth({
   baseURL: process.env.APP_URL,
@@ -14,6 +17,14 @@ export const auth = betterAuth({
       // Optional: limit to 1 organization via logic in UI/API
     }),
   ],
+  user: {
+    deleteUser: {
+      enabled: true,
+      sendDeleteAccountVerification: async ({ user, url }) => {
+        await sendDeleteVerificationEmail(user.name, user.email, url);
+      },
+    },
+  },
   session: {
     expiresIn: 60 * 60 * 24 * 30,
     updateAge: 60 * 60 * 24 * 1,
@@ -27,9 +38,8 @@ export const auth = betterAuth({
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
-      await sendVerificationEmail(user.name, user.email, url);
+      await sendUserVerificationEmail(user.name, user.email, url);
     },
-    sendOnSignUp: true,
   },
   socialProviders: {
     github: {

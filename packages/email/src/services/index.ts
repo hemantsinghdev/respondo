@@ -1,1 +1,4 @@
-export { sendVerificationEmail } from "./auth/verification";
+export {
+  sendUserVerificationEmail,
+  sendDeleteVerificationEmail,
+} from "./auth/verification";

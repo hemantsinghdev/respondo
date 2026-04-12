@@ -23,7 +23,9 @@ function SessionChecker({
 
   useEffect(() => {
     if (!isPending && !session) {
+      authClient.signOut();
       router.push("/login");
+      return;
     }
 
     const accountNotification = searchParams.get("account_created");

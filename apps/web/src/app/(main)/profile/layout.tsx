@@ -1,10 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { User, Building2 } from "@repo/ui/icons";
+import { User, IdCardLanyard } from "@repo/ui/icons";
 import { FloatingHeader } from "@app/components/FloatingHeader";
 
-const profileTabs = [{ name: "Basic Profile", href: "/profile", icon: User }];
+const profileTabs = [
+  { name: "Basic Profile", href: "/profile", icon: User },
+  { name: "Account", href: "/profile/account", icon: IdCardLanyard },
+];
 
 export default function ProfileLayout({
   children,
@@ -22,7 +25,7 @@ export default function ProfileLayout({
         maxWidth="max-w-5xl"
       />
 
-      <div className="mx-auto w-full max-w-4xl pt-12">{children}</div>
+      <div className="mx-auto w-full max-w-5xl pt-12">{children}</div>
     </div>
   );
 }

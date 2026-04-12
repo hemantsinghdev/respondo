@@ -41,7 +41,6 @@ export const GlobalConfirmDialog = () => {
 
   const isLocked = confirmText ? userInput !== confirmText : false;
 
-  // 1. Centralized Theme Mapper - This ensures all 4 sides and the top line match
   const getTheme = () => {
     switch (variant) {
       case "danger":
@@ -57,7 +56,7 @@ export const GlobalConfirmDialog = () => {
         return {
           border: "border-amber-500/50",
           glow: "shadow-[0_0_20px_rgba(245,158,11,0.15)]",
-          line: "from-amber-400 to-orange-500", // Fixed: No more blue here
+          line: "from-amber-400 to-orange-500",
           button:
             "from-amber-500 to-orange-600 hover:shadow-[0_0_15px_rgba(245,158,11,0.4)]",
           icon: <AlertTriangle className="text-amber-500 w-5 h-5" />,
@@ -81,7 +80,6 @@ export const GlobalConfirmDialog = () => {
       <DialogContent
         className={`bg-[#0D0D0D]/95 backdrop-blur-xl border ${theme.border} ${theme.glow} text-white max-w-md overflow-hidden p-0`}
       >
-        {/* 2. Top Accent Line - Set to h-[1px] to prevent "widening" look */}
         <div
           className={`absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r ${theme.line} z-50`}
         />
