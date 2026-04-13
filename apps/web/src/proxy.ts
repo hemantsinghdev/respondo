@@ -4,6 +4,7 @@ import { getSessionCookie } from "@repo/auth/server";
 export default function authProxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const sessionCookie = getSessionCookie(request);
+  console.log("Proxy has Run Here, and session cookie is", !!sessionCookie);
 
   const hasToken = !!sessionCookie;
 

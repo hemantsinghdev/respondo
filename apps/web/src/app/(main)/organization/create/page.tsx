@@ -1,176 +1,281 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import { orgSchema } from "@app/lib/validations/organization";
 import { authClient } from "@repo/auth/client";
 import { useRouter } from "next/navigation";
-import { Building2, Globe, MapPin, ArrowRight, Loader2 } from "@repo/ui/icons";
+import { Building2, MapPin, ArrowRight, Loader2 } from "@repo/ui/icons";
 import { notify } from "@app/lib/notify";
-
-const orgSchema = z.object({
-  name: z.string().min(2, "Name required"),
-  website: z.string().url("Invalid URL").or(z.literal("")),
-  address: z.string().min(5, "Address required"),
-  city: z.string().min(2, "City required"),
-  zipCode: z.string().min(3, "Zip required"),
-  country: z.string().min(2, "Country required"),
-});
+import { checkSlugExists } from "@app/actions/slugCheck";
+import { Combobox } from "./_components/Combobox";
+import { CreateOrgInput } from "./_components/createOrgInput";
+import { cn } from "@repo/ui/lib/utils";
 
 type OrgFormValues = z.infer<typeof orgSchema>;
 
 export default function CreateOrganization() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [isSlugManual, setIsSlugManual] = useState(false);
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    control,
+    watch,
+    setValue,
     trigger,
+    setError,
+    formState: { errors },
   } = useForm<OrgFormValues>({
     resolver: zodResolver(orgSchema),
+    mode: "onChange",
+    shouldUnregister: false,
+    defaultValues: {
+      name: "",
+      slug: "",
+      website: "",
+      address: "",
+      country: "",
+      city: "",
+      countryCode: "",
+      zipCode: "",
+    },
   });
 
+  const orgName = watch("name");
+  const currentSlug = watch("slug");
+
+  //Auto Slug Name
+  useEffect(() => {
+    if (!isSlugManual && step === 1) {
+      const generatedSlug = orgName
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
+      setValue("slug", generatedSlug);
+    }
+  }, [orgName, isSlugManual, setValue, step]);
+
   const nextStep = async () => {
-    const fields = step === 1 ? ["name", "website"] : [];
-    const isValid = await trigger(fields as any);
-    if (isValid) setStep(2);
+    const isStep1Valid = await trigger(["name", "slug", "website"]);
+
+    if (isStep1Valid) {
+      setLoading(true);
+      try {
+        const exists = await checkSlugExists(currentSlug);
+        if (exists) {
+          setError("slug", {
+            type: "manual",
+            message: "This slug is already taken by another entity.",
+          });
+          return;
+        }
+        setStep(2);
+      } catch (err) {
+        notify.error("Database connection error. Try again.");
+      } finally {
+        setLoading(false);
+      }
+    }
   };
 
   const onSubmit = async (data: OrgFormValues) => {
     setLoading(true);
     const { error } = await authClient.organization.create({
       name: data.name,
-      slug: data.name.toLowerCase().replace(/\s+/g, "-"),
+      slug: data.slug,
       metadata: { ...data },
     });
 
     if (error) {
       notify.error(error.message || "Failed to create organization");
     } else {
-      notify.success("Organization created successfully!");
-      router.push("/dashboard");
+      notify.success("Identity established. Welcome to the grid.");
+      router.push("/organization");
     }
     setLoading(false);
   };
 
   return (
-    <div className="max-w-xl mx-auto py-12 px-6">
-      {/* Stepper Header */}
-      <div className="flex items-center gap-4 mb-12">
+    <div className="max-w-xl mx-auto py-1 px-6">
+      {/* Stepper Header with Neon Glow */}
+      <div className="flex items-center gap-4 mb-3">
         <div
-          className={`h-1 flex-1 rounded-full ${step >= 1 ? "bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" : "bg-white/10"}`}
+          className={cn(
+            "h-1 flex-1 rounded-full transition-all duration-500",
+            step >= 1
+              ? "bg-cyan-500 shadow-[0_0_15px_rgba(6,182,212,0.6)]"
+              : "bg-white/10",
+          )}
         />
         <div
-          className={`h-1 flex-1 rounded-full ${step >= 2 ? "bg-cyan-500 shadow-[0_0_10px_rgba(6,182,212,0.5)]" : "bg-white/10"}`}
+          className={cn(
+            "h-1 flex-1 rounded-full transition-all duration-500",
+            step >= 2
+              ? "bg-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.6)]"
+              : "bg-white/10",
+          )}
         />
       </div>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-8 bg-[#0D0D0D] border border-white/5 p-8 rounded-3xl relative overflow-hidden"
-      >
-        <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-cyan-500 to-blue-600" />
-
-        {step === 1 ? (
-          <div className="animate-in slide-in-from-right-4 duration-500 space-y-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <Building2 className="text-cyan-400" /> Basic Information
-            </h2>
-            <div className="space-y-4">
-              <Input
-                label="Organization Name"
-                {...register("name")}
-                error={errors.name?.message}
-                placeholder="Acme Corp"
-              />
-              <Input
-                label="Website"
-                {...register("website")}
-                error={errors.website?.message}
-                placeholder="https://acme.com"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={nextStep}
-              className="w-full flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 py-3 font-bold text-white hover:bg-white/10 transition-all"
+      <div className="bg-[#0D0D0D] border border-white/5 rounded-3xl relative overflow-hidden min-h-[450px] flex flex-col shadow-2xl">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="p-8 flex-1 flex flex-col justify-between"
+        >
+          {step === 1 ? (
+            <div
+              key="step-1"
+              className="animate-in slide-in-from-right-4 duration-500 space-y-5"
             >
-              Continue to Location <ArrowRight className="h-4 w-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="animate-in slide-in-from-right-4 duration-500 space-y-6">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <MapPin className="text-purple-400" /> Location Details
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <Input
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <Building2 className="text-cyan-400" size={24} /> Basic Identity
+              </h2>
+
+              <div className="space-y-4">
+                <CreateOrgInput
+                  key="input-name"
+                  id="org-name"
+                  label="Organization Name"
+                  {...register("name")}
+                  autoComplete="off"
+                  error={errors.name?.message}
+                  placeholder="Cyberdyne Systems"
+                />
+
+                <CreateOrgInput
+                  key="input-slug"
+                  id="org-slug"
+                  label="Organization Slug"
+                  {...register("slug", {
+                    onChange: () => setIsSlugManual(true), // Merge the onChange correctly
+                  })}
+                  autoComplete="off"
+                  error={errors.slug?.message}
+                  placeholder="cyberdyne-systems"
+                />
+
+                <CreateOrgInput
+                  key="input-url"
+                  id="org-website"
+                  label="Company Website"
+                  {...register("website")}
+                  error={errors.website?.message}
+                  autoComplete="url"
+                  placeholder="https://cyberdyne.com"
+                />
+              </div>
+
+              <div className="pt-6">
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="w-full group flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 py-4 font-bold text-white hover:bg-white/10 hover:border-cyan-500/50 transition-all"
+                >
+                  Access Location Settings{" "}
+                  <ArrowRight
+                    className="group-hover:translate-x-1 transition-transform"
+                    size={18}
+                  />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div
+              key="step-2"
+              className="animate-in slide-in-from-right-4 duration-500 space-y-5"
+            >
+              <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                <MapPin className="text-purple-400" size={24} /> Operational
+                Base
+              </h2>
+
+              <div className="space-y-4">
+                <CreateOrgInput
+                  key="input-address"
+                  id="org-address"
                   label="Street Address"
                   {...register("address")}
+                  autoComplete="address-line1"
                   error={errors.address?.message}
-                  placeholder="123 Neon St"
+                  placeholder="Sector 7, Neon District"
+                />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      City
+                    </label>
+                    <Controller
+                      control={control}
+                      name="city"
+                      render={({ field }) => (
+                        <Combobox
+                          value={field.value}
+                          placeholder="Search City..."
+                          error={errors.city?.message}
+                          onChange={(cityName, code, countryFullName) => {
+                            field.onChange(cityName); // Sets city name in form
+                            setValue("countryCode", code); // Sets ISO code
+                            setValue("country", countryFullName); // Sets "India"
+                          }}
+                        />
+                      )}
+                    />
+                  </div>
+
+                  <CreateOrgInput
+                    key="input-country"
+                    id="org-country"
+                    label="Country (Detected)"
+                    {...register("country")}
+                    readOnly
+                    className="opacity-60 cursor-not-allowed bg-white/5"
+                    placeholder="Auto-detected"
+                  />
+                </div>
+
+                <CreateOrgInput
+                  key="input-postal-code"
+                  id="org-postal-code"
+                  label="ZIP / Postal Code"
+                  {...register("zipCode" as any)}
+                  autoComplete="postal-code"
+                  error={(errors as any).zipCode?.message}
+                  placeholder="101010"
                 />
               </div>
-              <Input
-                label="City"
-                {...register("city")}
-                error={errors.city?.message}
-              />
-              <Input
-                label="Zip Code"
-                {...register("zipCode")}
-                error={errors.zipCode?.message}
-              />
-              <div className="col-span-2">
-                <Input
-                  label="Country"
-                  {...register("country")}
-                  error={errors.country?.message}
-                />
+
+              <div className="flex gap-4 pt-6">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="flex-1 py-3 text-slate-500 hover:text-white transition-colors font-medium"
+                >
+                  Back
+                </button>
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="flex-[2] flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-blue-600 py-3 font-bold text-white shadow-[0_0_20px_rgba(168,85,247,0.3)] hover:scale-[1.02] transition-all"
+                >
+                  {loading ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    "Deploy Organization"
+                  )}
+                </button>
               </div>
             </div>
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="flex-1 py-3 text-slate-400 font-medium"
-              >
-                Back
-              </button>
-              <button
-                disabled={loading}
-                type="submit"
-                className="flex-1 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-3 font-bold text-white shadow-[0_0_20px_rgba(6,182,212,0.3)]"
-              >
-                {loading ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  "Complete Setup"
-                )}
-              </button>
-            </div>
-          </div>
-        )}
-      </form>
+          )}
+        </form>
+      </div>
     </div>
   );
 }
-
-// Reusable Styled Input
-const Input = ({ label, error, ...props }: any) => (
-  <div className="space-y-1">
-    <label className="text-xs font-semibold text-slate-400 uppercase tracking-tighter">
-      {label}
-    </label>
-    <input
-      {...props}
-      className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500/50 transition-colors placeholder:text-slate-700"
-    />
-    {error && <p className="text-xs text-red-400 mt-1">{error}</p>}
-  </div>
-);

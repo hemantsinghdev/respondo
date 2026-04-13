@@ -1,7 +1,7 @@
 "use client";
 
 import { authClient } from "@repo/auth/client";
-import { useConfirmStore } from "@app/lib/store/confirmStore";
+import { useConfirmStore } from "@app/lib/stores/confirmStore";
 import { notify } from "@app/lib/notify";
 import { Trash2 } from "@repo/ui/icons";
 

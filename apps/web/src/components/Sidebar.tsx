@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useSidebarStore } from "@app/lib/store/sidebarStore";
-import { useConfirmStore } from "@app/lib/store/confirmStore";
+import { useSidebarStore } from "@app/lib/stores/sidebarStore";
+import { useConfirmStore } from "@app/lib/stores/confirmStore";
 import { Images } from "@repo/ui/assets";
 import { usePathname } from "next/navigation";
 import {

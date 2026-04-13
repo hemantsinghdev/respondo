@@ -4,7 +4,7 @@ import "@repo/ui/styles/respondo-toaster.css";
 import { Toaster } from "@repo/ui/components";
 import { GlobalConfirmDialog } from "@app/components/ConfirmDialog";
 import { Sidebar } from "@app/components/Sidebar";
-import { useSidebarStore } from "@app/lib/store/sidebarStore";
+import { useSidebarStore } from "@app/lib/stores/sidebarStore";
 import { authClient } from "@repo/auth/client";
 import { cn } from "@repo/ui/lib/utils";
 import { useRouter, useSearchParams } from "next/navigation";

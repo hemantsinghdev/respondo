@@ -2,15 +2,18 @@
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
   "tasks": {
-    "build:assets": {
-      "outputs": ["src/assets/index.ts"],
-      "cache": true
-    },
     "build": {
-      "dependsOn": ["^build", "^db:generate", "^build:assets"],
+      "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"],
-      "env": ["DATABASE_URL"]
+      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
+      "env": [
+        "DATABASE_URL",
+        "APP_URL",
+        "BETTER_AUTH_SECRET",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET",
+        "BREVO_API_KEY"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"]
@@ -19,7 +22,7 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["^db:generate", "^build:assets"],
+      "dependsOn": ["^db:generate"],
       "cache": false,
       "persistent": true
     },
