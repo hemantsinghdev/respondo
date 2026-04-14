@@ -8,7 +8,8 @@ export default function authProxy(request: NextRequest) {
 
   const hasToken = !!sessionCookie;
 
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage =
+    pathname === "/login" || pathname === "/signup" || pathname === "/goodbye";
   const isLandingPage = pathname === "/";
   const isPublicRoute = isAuthPage || isLandingPage;
 

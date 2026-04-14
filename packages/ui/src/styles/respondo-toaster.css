@@ -18,3 +18,15 @@
   border: none !important;
   box-shadow: none !important;
 }
+
+/* In respondo-toaster.css */
+
+/* When the toast is paused, find the progress bar and freeze it */
+[data-sonner-toast][data-state="paused"] .animate-out {
+  animation-play-state: paused !important;
+}
+
+/* When the toast is active, let it run */
+[data-sonner-toast][data-state="active"] .animate-out {
+  animation-play-state: running !important;
+}

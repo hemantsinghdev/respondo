@@ -93,7 +93,7 @@ export default function MainLayout({
         <Toaster
           position="bottom-right"
           expand={true}
-          visibleToasts={15}
+          visibleToasts={5}
           className="respondo-toaster"
           toastOptions={{
             unstyled: true,

@@ -4,6 +4,7 @@ import { authClient } from "@repo/auth/client";
 import { useConfirmStore } from "@app/lib/stores/confirmStore";
 import { notify } from "@app/lib/notify";
 import { Trash2 } from "@repo/ui/icons";
+import { getGoodbyeLink } from "@app/actions/goodbyeLink";
 
 export default function DeleteAccountSection() {
   const { data: session } = authClient.useSession();
@@ -18,8 +19,13 @@ export default function DeleteAccountSection() {
       actionLabel: "Permanently Delete",
       confirmText: session?.user.email,
       onConfirm: async () => {
+        if (!session?.user) return;
+        const goodbyeURL = await getGoodbyeLink(
+          session?.user.name,
+          session?.user.createdAt.toISOString(),
+        );
         const { data, error } = await authClient.deleteUser({
-          callbackURL: "/goodbye",
+          callbackURL: goodbyeURL,
         });
         if (error) notify.error("Error deleting account.");
         else

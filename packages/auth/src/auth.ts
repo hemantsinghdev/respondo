@@ -14,7 +14,27 @@ export const auth = betterAuth({
   }),
   plugins: [
     organization({
-      // Optional: limit to 1 organization via logic in UI/API
+      allowUserToCreateOrganization: async (user): Promise<boolean> => {
+        return user.emailVerified;
+      },
+      organizationHooks: {
+        beforeDeleteOrganization: async (data) => {
+          const member = await prisma.member.findUnique({
+            where: {
+              userId: data.user.id,
+            },
+            select: { role: true, organizationId: true },
+          });
+          if (
+            !member ||
+            member.organizationId !== data.organization.id ||
+            member.role !== "owner"
+          ) {
+            throw new Error("UNAUTHORIZED");
+          }
+          return;
+        },
+      },
     }),
   ],
   user: {
@@ -22,6 +42,19 @@ export const auth = betterAuth({
       enabled: true,
       sendDeleteAccountVerification: async ({ user, url }) => {
         await sendDeleteVerificationEmail(user.name, user.email, url);
+      },
+      beforeDelete: async (user) => {
+        const membership = await prisma.member.findUnique({
+          where: { userId: user.id },
+          include: { organization: true },
+        });
+
+        // If they are the owner of their one-and-only org, delete the org
+        if (membership?.role === "owner") {
+          await prisma.organization.delete({
+            where: { id: membership.organizationId },
+          });
+        }
       },
     },
   },
@@ -40,6 +73,7 @@ export const auth = betterAuth({
     sendVerificationEmail: async ({ user, url }) => {
       await sendUserVerificationEmail(user.name, user.email, url);
     },
+    autoSignInAfterVerification: true,
   },
   socialProviders: {
     github: {

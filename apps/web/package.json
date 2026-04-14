@@ -16,6 +16,7 @@
     "@repo/db": "workspace:*",
     "@repo/email": "workspace:*",
     "@repo/ui": "workspace:*",
+    "jose": "^6.2.2",
     "lodash": "^4.18.1",
     "next": "16.1.4",
     "react": "19.2.3",

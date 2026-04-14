@@ -22,9 +22,16 @@ export default function BasicProfile() {
 
   useEffect(() => {
     if (isVerifiedFlow) {
-      refetch();
-      window.history.replaceState({}, "", "/profile");
-      notify.success("Email verified successfully!");
+      authClient
+        .getSession({
+          query: { disableCookieCache: true },
+          fetchOptions: { cache: "no-cache" },
+        })
+        .then((res) => {
+          refetch();
+          window.history.replaceState({}, "", "/profile");
+          notify.success("Email verified successfully!");
+        });
     }
   }, [isVerifiedFlow, refetch]);
 

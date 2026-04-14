@@ -93,9 +93,11 @@ export const ToastItem = ({
       {duration && (
         <div className="absolute bottom-0 left-[5px] h-[0.5px] w-full flex justify-center overflow-hidden rounded-b-xl">
           <div
-            style={{ animationDuration: `${duration}ms` }}
+            style={{
+              animationDuration: `${duration}ms`,
+            }}
             className={cn(
-              "w-[90%] h-full fade-out-30 animate-out slide-out-to-left ease-linear fill-mode-forwards",
+              "w-[90%] h-full fade-out animate-out slide-out-to-left ease-linear fill-mode-forwards",
               variant === "ai" ? "bg-purple-500" : "bg-cyan-500",
             )}
           />

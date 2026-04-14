@@ -7,7 +7,13 @@ import * as z from "zod";
 import { orgSchema } from "@app/lib/validations/organization";
 import { authClient } from "@repo/auth/client";
 import { useRouter } from "next/navigation";
-import { Building2, MapPin, ArrowRight, Loader2 } from "@repo/ui/icons";
+import {
+  Building2,
+  MapPin,
+  ArrowRight,
+  Loader2,
+  MailCheck,
+} from "@repo/ui/icons";
 import { notify } from "@app/lib/notify";
 import { checkSlugExists } from "@app/actions/slugCheck";
 import { Combobox } from "./_components/Combobox";
@@ -19,8 +25,38 @@ type OrgFormValues = z.infer<typeof orgSchema>;
 export default function CreateOrganization() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [initialCheck, setInitialCheck] = useState(true);
   const [isSlugManual, setIsSlugManual] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const { data: session } = authClient.useSession();
   const router = useRouter();
+
+  useEffect(() => {
+    async function performIdentityCheck() {
+      // Check Email Verification
+      if (!session?.user.emailVerified) {
+        setNeedsVerification(true);
+        setInitialCheck(false);
+        return;
+      }
+
+      // Check Existing Organization
+      const { data: orgs } = await authClient.organization.list();
+      if (orgs && orgs.length > 0) {
+        notify.warning(
+          "Restricted Access",
+          "You can only be part of one organization at a time.",
+        );
+        router.push("/organization");
+        return;
+      }
+
+      setInitialCheck(false);
+    }
+
+    performIdentityCheck();
+  }, [session?.user.emailVerified, router]);
 
   const {
     register,
@@ -62,14 +98,48 @@ export default function CreateOrganization() {
     }
   }, [orgName, isSlugManual, setValue, step]);
 
+  const handleSendVerification = async () => {
+    setIsSending(true);
+    const { error } = await authClient.sendVerificationEmail({
+      email: session?.user.email || "",
+      callbackURL: "/profile?email-verified=true",
+    });
+
+    if (error) {
+      notify.error("Failed to send verification email.");
+    } else {
+      notify.success(
+        "Verification link sent!",
+        "Check your inbox to authorize your identity.",
+        10000,
+      );
+    }
+    setIsSending(false);
+  };
+
   const nextStep = async () => {
     const isStep1Valid = await trigger(["name", "slug", "website"]);
 
     if (isStep1Valid) {
       setLoading(true);
       try {
-        const exists = await checkSlugExists(currentSlug);
-        if (exists) {
+        const { data, error } = await authClient.organization.checkSlug({
+          slug: currentSlug,
+        });
+        if (error) {
+          // Handle request-level errors (like network failure or rate limits)
+          notify.error("Error checking slug", error.message);
+          return;
+        }
+        // const exists = await checkSlugExists(currentSlug);
+        // if (exists) {
+        //   setError("slug", {
+        //     type: "manual",
+        //     message: "This slug is already taken by another entity.",
+        //   });
+        //   return;
+        // }
+        if (!data.status) {
           setError("slug", {
             type: "manual",
             message: "This slug is already taken by another entity.",
@@ -94,13 +164,53 @@ export default function CreateOrganization() {
     });
 
     if (error) {
-      notify.error(error.message || "Failed to create organization");
+      if (error.status === 403) {
+        notify.error("User is not allowed to create organization");
+      } else {
+        notify.error(error.message || "Failed to create organization");
+      }
     } else {
       notify.success("Identity established. Welcome to the grid.");
       router.push("/organization");
     }
     setLoading(false);
   };
+
+  if (initialCheck) {
+    return (
+      <div className="flex h-[450px] items-center justify-center">
+        <Loader2 className="animate-spin text-cyan-500" size={32} />
+      </div>
+    );
+  }
+
+  if (needsVerification) {
+    return (
+      <div className="max-w-xl mx-auto py-1 px-6">
+        <div className="bg-[#0D0D0D] border border-cyan-500/20 rounded-3xl p-8 text-center space-y-6 shadow-[0_0_30px_rgba(6,182,212,0.1)]">
+          <div className="inline-flex h-20 w-20 items-center justify-center rounded-full bg-cyan-500/10 border border-cyan-500/30 mb-2">
+            <MailCheck className="text-cyan-400" size={40} />
+          </div>
+          <h2 className="text-3xl font-bold text-white">Identity Unverified</h2>
+          <p className="text-slate-400 max-w-sm mx-auto">
+            Access to the organization grid requires a verified email address.
+            Please confirm your transmission.
+          </p>
+          <button
+            onClick={handleSendVerification}
+            disabled={isSending}
+            className="w-full flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-600 py-4 font-bold text-white hover:scale-[1.02] transition-all disabled:opacity-50"
+          >
+            {isSending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              "Resend Verification Link"
+            )}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-xl mx-auto py-1 px-6">
@@ -176,13 +286,20 @@ export default function CreateOrganization() {
                 <button
                   type="button"
                   onClick={nextStep}
+                  disabled={loading}
                   className="w-full group flex items-center justify-center gap-2 rounded-xl bg-white/5 border border-white/10 py-4 font-bold text-white hover:bg-white/10 hover:border-cyan-500/50 transition-all"
                 >
-                  Access Location Settings{" "}
-                  <ArrowRight
-                    className="group-hover:translate-x-1 transition-transform"
-                    size={18}
-                  />
+                  {loading ? (
+                    <Loader2 className="animate-spin" />
+                  ) : (
+                    <>
+                      Access Location Settings{" "}
+                      <ArrowRight
+                        className="group-hover:translate-x-1 transition-transform"
+                        size={18}
+                      />
+                    </>
+                  )}
                 </button>
               </div>
             </div>
