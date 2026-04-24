@@ -1,13 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { User, IdCardLanyard } from "@repo/ui/icons";
 import { FloatingHeader } from "@app/components/FloatingHeader";
-
-const profileTabs = [
-  { name: "Basic Profile", href: "/profile", icon: User },
-  { name: "Account", href: "/profile/account", icon: IdCardLanyard },
-];
 
 export default function ProfileLayout({
   children,
@@ -19,7 +13,7 @@ export default function ProfileLayout({
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex flex-col">
       <FloatingHeader
-        tabs={profileTabs}
+        type="profile"
         title="Account Settings"
         topOffset="top-0"
         maxWidth="max-w-5xl"

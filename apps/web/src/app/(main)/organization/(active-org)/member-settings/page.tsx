@@ -11,42 +11,31 @@ import {
   ArrowLeft,
   Loader2,
 } from "@repo/ui/icons";
-import Link from "next/link";
 import { useEffect, useState } from "react";
-import { findMembership } from "@app/actions/findMembership";
 
 export default function MemberSettingsPage() {
-  const { data: organizations, isPending } = authClient.useListOrganizations();
-  const [isOwner, setIsOwner] = useState(false);
-  const [isChecking, setIsChecking] = useState(true);
-  const { data: session } = authClient.useSession();
+  const router = useRouter();
+  const { data: activeOrgData, isPending } = authClient.useActiveMember();
   const { openConfirm } = useConfirmStore();
   const [isProcessing, setIsProcessing] = useState(false);
-  const router = useRouter();
-  const activeOrg = organizations?.[0];
 
   useEffect(() => {
-    const checkOwnership = async () => {
-      if (!session?.user?.id || !activeOrg?.id) return;
+    if (!isPending && !activeOrgData) {
+      notify.error("No Active Organization Found!!!");
+      router.push("/organization");
+    }
+  }, [activeOrgData, isPending, router]);
 
-      try {
-        setIsChecking(true);
-        const membership = await findMembership(session.user.id);
-        const isUserOwner = !!(
-          membership &&
-          membership.organizationId === activeOrg.id &&
-          membership.role === "owner"
-        );
-        setIsOwner(isUserOwner);
-      } catch (error) {
-        console.error("Ownership check failed:", error);
-      } finally {
-        setIsChecking(false);
-      }
-    };
+  if (!activeOrgData) return null;
 
-    checkOwnership();
-  }, [session?.user?.id, activeOrg?.id]);
+  if (isPending)
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
+      </div>
+    );
+
+  const isOwner = activeOrgData.role === "owner";
 
   const handleLeave = () => {
     openConfirm({
@@ -57,20 +46,17 @@ export default function MemberSettingsPage() {
       variant: "warning",
       actionLabel: "Leave Organization",
       onConfirm: async () => {
-        if (!activeOrg?.id) {
-          notify.error("No active node detected.");
-          return;
-        }
         setIsProcessing(true);
         const { error } = await authClient.organization.leave({
-          organizationId: activeOrg.id,
+          organizationId: activeOrgData.organizationId,
         });
         if (error) {
           notify.error("Failed to leave organization.");
           setIsProcessing(false); // Reset if error
         } else {
           notify.success("Connection terminated.");
-          router.push("/organization");
+          await authClient.organization.setActive({ organizationId: null });
+          window.location.href = "/organization";
         }
       },
     });
@@ -85,44 +71,24 @@ export default function MemberSettingsPage() {
       variant: "danger",
       actionLabel: "Delete Organization",
       onConfirm: async () => {
-        if (!activeOrg?.id) {
-          notify.error("No active node detected.");
-          return;
-        }
         setIsProcessing(true);
         const { error } = await authClient.organization.delete({
-          organizationId: activeOrg.id,
+          organizationId: activeOrgData.organizationId,
         });
         if (error) {
           notify.error("Failed to Delete Organization.");
           setIsProcessing(false); // Reset if error
         } else {
           notify.success("Node successfully erased.");
-          router.push("/organization");
+          await authClient.organization.setActive({ organizationId: null });
+          window.location.href = "/organization";
         }
       },
     });
   };
 
-  if (isPending || isChecking)
-    return (
-      <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-purple-500" />
-      </div>
-    );
-
   return (
     <div className="max-w-2xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4">
-      <Link
-        href="/organization"
-        className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors mb-4"
-      >
-        <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
-        <span className="text-sm font-mono uppercase tracking-widest">
-          Back to Node
-        </span>
-      </Link>
-
       <div className="bg-[#0D0D0D] border border-white/5 rounded-3xl p-8 relative overflow-hidden">
         <div className="absolute top-0 right-0 p-8 opacity-5">
           <ShieldAlert size={120} />

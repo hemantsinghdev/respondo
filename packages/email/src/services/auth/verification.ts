@@ -27,7 +27,7 @@ export const sendUserVerificationEmail = async (
                 <tr>
                   <td align="center" style="padding: 48px 40px 20px 40px;">
                     <img 
-                      src="${Images.logos.long}" 
+                      src="${process.env.NEXT_PUBLIC_APP_URL}${Images.logos.long.src}" 
                       alt="Respondo" 
                       height="40" 
                       style="display: block; border: 0; height: 40px; width: auto;"

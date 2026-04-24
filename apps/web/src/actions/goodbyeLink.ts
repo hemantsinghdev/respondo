@@ -1,5 +1,4 @@
 "use server";
-import { auth } from "@repo/auth/server";
 import { SignJWT } from "jose";
 
 export async function getGoodbyeLink(name: string, createdAt: string) {

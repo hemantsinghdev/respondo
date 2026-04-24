@@ -2,7 +2,7 @@
 <img src="packages/ui/src/assets/images/respondo-long-logo.png" alt="Respondo logo" width="320" />
 </p>
 
-**Respondo** isn't just another CRM; it’s a **high-performance solution** engineered to bridge the **communication gap between small businesses and their customers**. In a world where communication is fragmented across emails, chats, and social platforms, Respondo acts as a single, intelligent heartbeat for your business operations.
+**Respondo** isn't just another Helpdesk CRM; it’s a **high-performance solution** engineered to bridge the **communication gap between small businesses and their customers**. In a world where communication is fragmented across emails, chats, and social platforms, Respondo acts as a single, intelligent heartbeat for your business operations.
 
 This project was built with a clear philosophy: **Complexity should be handled by the system, not the user.** Every line of code, from the background workers to the UI primitives, is crafted to ensure that even the smallest team can provide enterprise-grade support with a human touch.
 

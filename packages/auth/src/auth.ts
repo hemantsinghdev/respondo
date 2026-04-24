@@ -1,10 +1,12 @@
-import { betterAuth } from "better-auth";
+import { betterAuth, email } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
+import { ac, owner } from "./permissions";
 import { prisma } from "@repo/db";
 import {
   sendDeleteVerificationEmail,
   sendUserVerificationEmail,
+  sendOrganizationInvitationEmail,
 } from "@repo/email/services";
 
 export const auth = betterAuth({
@@ -14,8 +16,44 @@ export const auth = betterAuth({
   }),
   plugins: [
     organization({
+      schema: {
+        organization: {
+          additionalFields: {
+            email: {
+              type: "string",
+              required: false,
+            },
+          },
+        },
+      },
+      ac,
+      roles: { owner },
+      dynamicAccessControl: {
+        enabled: true,
+      },
+      teams: {
+        enabled: true,
+      },
       allowUserToCreateOrganization: async (user): Promise<boolean> => {
         return user.emailVerified;
+      },
+      requireEmailVerificationOnInvitation: true,
+      async sendInvitationEmail(data) {
+        const organization = data.organization as typeof data.organization & {
+          email: string;
+        };
+        const orgSenderEmail =
+          organization.email ?? process.env.RESPONDO_SENDER_EMAIL;
+        const inviteLink = `https://${process.env.NEXT_PUBLIC_APP_URL}/organization/accept-invitation/${data.id}`;
+        await sendOrganizationInvitationEmail({
+          email: data.email,
+          invitedByUsername: data.inviter.user.name,
+          invitedByEmail: data.invitation.email,
+          orgName: data.organization.name,
+          teamName: data.invitation.teamId ?? undefined,
+          orgLogoUrl: data.organization.logo ?? undefined,
+          inviteLink,
+        });
       },
       organizationHooks: {
         beforeDeleteOrganization: async (data) => {

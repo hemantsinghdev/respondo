@@ -27,7 +27,12 @@ export default function DeleteAccountSection() {
         const { data, error } = await authClient.deleteUser({
           callbackURL: goodbyeURL,
         });
-        if (error) notify.error("Error deleting account.");
+        if (error)
+          notify.error(
+            "Error deleting account.",
+            `${error.message} - ${error.code}`,
+            8000,
+          );
         else
           notify.success(
             "Account Deletion Link Sent on Email",

@@ -15,7 +15,6 @@ import {
   MailCheck,
 } from "@repo/ui/icons";
 import { notify } from "@app/lib/notify";
-import { checkSlugExists } from "@app/actions/slugCheck";
 import { Combobox } from "./_components/Combobox";
 import { CreateOrgInput } from "./_components/createOrgInput";
 import { cn } from "@repo/ui/lib/utils";
@@ -123,23 +122,10 @@ export default function CreateOrganization() {
     if (isStep1Valid) {
       setLoading(true);
       try {
-        const { data, error } = await authClient.organization.checkSlug({
+        const { error } = await authClient.organization.checkSlug({
           slug: currentSlug,
         });
         if (error) {
-          // Handle request-level errors (like network failure or rate limits)
-          notify.error("Error checking slug", error.message);
-          return;
-        }
-        // const exists = await checkSlugExists(currentSlug);
-        // if (exists) {
-        //   setError("slug", {
-        //     type: "manual",
-        //     message: "This slug is already taken by another entity.",
-        //   });
-        //   return;
-        // }
-        if (!data.status) {
           setError("slug", {
             type: "manual",
             message: "This slug is already taken by another entity.",
@@ -157,7 +143,7 @@ export default function CreateOrganization() {
 
   const onSubmit = async (data: OrgFormValues) => {
     setLoading(true);
-    const { error } = await authClient.organization.create({
+    const { data: newOrgData, error } = await authClient.organization.create({
       name: data.name,
       slug: data.slug,
       metadata: { ...data },
@@ -171,6 +157,10 @@ export default function CreateOrganization() {
       }
     } else {
       notify.success("Identity established. Welcome to the grid.");
+      await authClient.organization.setActive({
+        organizationId: newOrgData.id,
+      });
+      router.refresh();
       router.push("/organization");
     }
     setLoading(false);
@@ -213,7 +203,7 @@ export default function CreateOrganization() {
   }
 
   return (
-    <div className="max-w-xl mx-auto py-1 px-6">
+    <div className="max-w-xl mx-auto mt-16 px-6">
       {/* Stepper Header with Neon Glow */}
       <div className="flex items-center gap-4 mb-3">
         <div

@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LucideIcon } from "@repo/ui/icons";
+import { Building2, IdCard, LucideIcon, Settings, User } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 
 interface NavTab {
@@ -12,8 +12,21 @@ interface NavTab {
   icon?: LucideIcon;
 }
 
+const TABS_CONFIG = {
+  profile: [
+    { name: "Basic Profile", href: "/profile", icon: User },
+    { name: "Account", href: "/profile/account", icon: IdCard },
+  ],
+  organization: [
+    { name: "Basic", href: "/organization", icon: Building2 },
+    { name: "Settings", href: "/organization/member-settings", icon: Settings },
+  ],
+} as const;
+
+type HeaderType = keyof typeof TABS_CONFIG;
+
 interface FloatingHeaderProps {
-  tabs: NavTab[];
+  type: HeaderType;
   title?: string;
   topOffset?: string; // e.g., "top-4" or "top-10"
   maxWidth?: string; // e.g., "max-w-4xl" or "max-w-full"
@@ -21,13 +34,14 @@ interface FloatingHeaderProps {
 }
 
 export function FloatingHeader({
-  tabs,
+  type,
   title,
   topOffset = "top-4",
   maxWidth = "max-w-4xl",
   className,
 }: FloatingHeaderProps) {
   const pathname = usePathname();
+  const tabs = TABS_CONFIG[type];
 
   return (
     <div

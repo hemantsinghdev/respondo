@@ -1,6 +1,6 @@
+
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -164,4 +164,3 @@ model Invitation {
   @@index([email])
   @@map("invitation")
 }
-

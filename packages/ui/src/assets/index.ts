@@ -1,5 +1,5 @@
-import shortLogo from "./images/respondo-short-logo.png";
 import longLogo from "./images/respondo-long-logo.png";
+import shortLogo from "./images/respondo-short-logo.png";
 
 export const Images = {
   logos: {
