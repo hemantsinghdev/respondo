@@ -3,7 +3,15 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, IdCard, LucideIcon, Settings, User } from "@repo/ui/icons";
+import {
+  Building2,
+  IdCard,
+  LucideIcon,
+  Settings,
+  User,
+  Users,
+  FileCog,
+} from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 
 interface NavTab {
@@ -20,6 +28,7 @@ const TABS_CONFIG = {
   organization: [
     { name: "Basic", href: "/organization", icon: Building2 },
     { name: "Settings", href: "/organization/member-settings", icon: Settings },
+    { name: "members", href: "/organization/members", icon: Users },
   ],
 } as const;
 

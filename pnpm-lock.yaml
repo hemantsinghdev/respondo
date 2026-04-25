@@ -242,6 +242,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.71.1(react@19.2.0))
       '@radix-ui/react-label':
         specifier: ^2.1.8
         version: 2.1.8(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -278,6 +281,9 @@ importers:
       react-dom:
         specifier: ^19.2.0
         version: 19.2.0(react@19.2.0)
+      react-hook-form:
+        specifier: ^7.71.1
+        version: 7.71.1(react@19.2.0)
       sonner:
         specifier: ^2.0.7
         version: 2.0.7(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -290,6 +296,9 @@ importers:
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
+      zod:
+        specifier: ^4.3.5
+        version: 4.3.5
     devDependencies:
       '@repo/eslint-config':
         specifier: workspace:*
@@ -4550,6 +4559,11 @@ snapshots:
     dependencies:
       hono: 4.10.6
 
+  '@hookform/resolvers@5.2.2(react-hook-form@7.71.1(react@19.2.0))':
+    dependencies:
+      '@standard-schema/utils': 0.3.0
+      react-hook-form: 7.71.1(react@19.2.0)
+
   '@hookform/resolvers@5.2.2(react-hook-form@7.71.1(react@19.2.3))':
     dependencies:
       '@standard-schema/utils': 0.3.0
@@ -7564,6 +7578,10 @@ snapshots:
     dependencies:
       react: 19.2.3
       scheduler: 0.27.0
+
+  react-hook-form@7.71.1(react@19.2.0):
+    dependencies:
+      react: 19.2.0
 
   react-hook-form@7.71.1(react@19.2.3):
     dependencies:

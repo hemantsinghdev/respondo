@@ -160,8 +160,7 @@ export default function CreateOrganization() {
       await authClient.organization.setActive({
         organizationId: newOrgData.id,
       });
-      router.refresh();
-      router.push("/organization");
+      window.location.href = "/organization";
     }
     setLoading(false);
   };

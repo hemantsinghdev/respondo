@@ -23,3 +23,8 @@ export const orgSchema = z.object({
   country: z.string().min(1, "Please select a country"),
   countryCode: z.string().min(2).max(2), // ISO code for logic
 });
+
+export const inviteSchema = z.object({
+  email: z.email("Please enter a valid mission-critical email."),
+  role: z.string().min(1, "Access level selection is required."),
+});

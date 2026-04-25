@@ -3,7 +3,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
 } from "better-auth/client/plugins";
-import { ac, owner } from "./permissions";
+import { ac, admin, member, owner } from "./permissions";
 import { auth } from "./auth";
 
 export const authClient = createAuthClient({
@@ -12,7 +12,7 @@ export const authClient = createAuthClient({
     organizationClient({
       schema: inferOrgAdditionalFields<typeof auth>(),
       ac,
-      roles: { owner },
+      roles: { owner, admin, member },
       dynamicAccessControl: {
         enabled: true,
       },

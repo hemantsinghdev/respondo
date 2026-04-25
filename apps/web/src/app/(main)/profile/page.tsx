@@ -21,18 +21,17 @@ export default function BasicProfile() {
   const isVerifiedFlow = searchParams.get("email-verified") === "true";
 
   useEffect(() => {
-    if (isVerifiedFlow) {
-      authClient
-        .getSession({
-          query: { disableCookieCache: true },
-          fetchOptions: { cache: "no-cache" },
-        })
-        .then((res) => {
-          refetch();
-          window.history.replaceState({}, "", "/profile");
-          notify.success("Email verified successfully!");
-        });
-    }
+    const checkVerification = async () => {
+      if (isVerifiedFlow) {
+        window.history.replaceState({}, "", "/profile");
+        await refetch();
+        if (session?.user.emailVerified) {
+          notify.success("Email is successfully verified!");
+        }
+      }
+    };
+
+    checkVerification();
   }, [isVerifiedFlow, refetch]);
 
   const handleSendVerification = async () => {
@@ -78,7 +77,7 @@ export default function BasicProfile() {
             onClick={
               !session?.user.emailVerified ? handleSendVerification : undefined
             }
-            className={`group relative overflow-hidden rounded-2xl border border-white/5 bg-[#0D0D0D] p-6 transition-all hover:border-cyan-500/30 cursor-pointer ${isSending ? "opacity-50 pointer-events-none" : ""}`}
+            className={`group relative overflow-hidden rounded-2xl border border-white/5 bg-[#0D0D0D] p-6 transition-all hover:border-cyan-500/30 ${!session?.user.emailVerified ? "cursor-pointer" : ""} ${isSending ? "opacity-50 pointer-events-none" : ""}`}
           >
             <div className="flex items-center justify-between">
               <div className="flex flex-col">

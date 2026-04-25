@@ -32,3 +32,27 @@ export {
   CommandShortcut,
   CommandSeparator,
 } from "./command";
+export { Field, FieldGroup, FieldLabel, FieldError } from "./field";
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
+export { Separator } from "./separator";
+export {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./table";
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
+export { Avatar, AvatarFallback, AvatarImage } from "./avatar";

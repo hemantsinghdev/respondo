@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { FloatingHeader } from "@app/components/FloatingHeader";
 import NoOrganizationUI from "./_components/NoOrganizationUI";
+import { ActivateOrg } from "./_components/ActivateOrg";
 
 export default async function ActiveOrganizationLayout({
   children,
@@ -15,29 +16,22 @@ export default async function ActiveOrganizationLayout({
 
   if (!session) redirect("/login");
 
-  if (!session.session.activeOrganizationId) {
-    const organizations = await auth.api.listOrganizations({
-      headers: await headers(),
-    });
-    const org = organizations?.[0];
+  const organizations = await auth.api.listOrganizations({
+    headers: await headers(),
+  });
+  const org = organizations?.[0];
 
+  if (!org && session.session.activeOrganizationId) {
+    return <ActivateOrg organizationId={null} />;
+  }
+
+  if (!session.session.activeOrganizationId) {
     if (org) {
-      await auth.api.setActiveOrganization({
-        body: { organizationId: org.id },
-        headers: await headers(),
-      });
-      // Redirect to the same path to ensure headers/cookies are re-read by the server
-      redirect("/organization");
+      return <ActivateOrg organizationId={org.id} />;
     }
 
     return <NoOrganizationUI session={session} />;
   }
-
-  const organizations = await auth.api.listOrganizations({
-    headers: await headers(),
-  });
-
-  const org = organizations?.[0];
 
   return (
     <div className="relative min-h-[calc(100vh-4rem)] flex flex-col">

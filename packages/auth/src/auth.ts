@@ -1,7 +1,7 @@
 import { betterAuth, email } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
-import { ac, owner } from "./permissions";
+import { ac, admin, member, owner } from "./permissions";
 import { prisma } from "@repo/db";
 import {
   sendDeleteVerificationEmail,
@@ -27,7 +27,7 @@ export const auth = betterAuth({
         },
       },
       ac,
-      roles: { owner },
+      roles: { owner, admin, member },
       dynamicAccessControl: {
         enabled: true,
       },
@@ -38,17 +38,18 @@ export const auth = betterAuth({
         return user.emailVerified;
       },
       requireEmailVerificationOnInvitation: true,
+      cancelPendingInvitationsOnReInvite: true,
       async sendInvitationEmail(data) {
         const organization = data.organization as typeof data.organization & {
           email: string;
         };
         const orgSenderEmail =
           organization.email ?? process.env.RESPONDO_SENDER_EMAIL;
-        const inviteLink = `https://${process.env.NEXT_PUBLIC_APP_URL}/organization/accept-invitation/${data.id}`;
+        const inviteLink = `${process.env.NEXT_PUBLIC_APP_URL}/organization/invitation/${data.id}`;
         await sendOrganizationInvitationEmail({
           email: data.email,
           invitedByUsername: data.inviter.user.name,
-          invitedByEmail: data.invitation.email,
+          invitedByEmail: orgSenderEmail,
           orgName: data.organization.name,
           teamName: data.invitation.teamId ?? undefined,
           orgLogoUrl: data.organization.logo ?? undefined,
@@ -97,8 +98,8 @@ export const auth = betterAuth({
     },
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 30,
-    updateAge: 60 * 60 * 24 * 1,
+    expiresIn: 60 * 60 * 24 * 30, // 30 days
+    updateAge: 60 * 60 * 24 * 1, // updates session each day, pushing expiry forward
     cookieCache: {
       enabled: true,
       maxAge: 15 * 60, // Cache the session state for 15 minutes
