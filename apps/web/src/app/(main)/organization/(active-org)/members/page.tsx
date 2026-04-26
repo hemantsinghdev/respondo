@@ -3,11 +3,17 @@ import { headers } from "next/headers";
 import { UserPlus, Users } from "@repo/ui/icons";
 import { MembersClient } from "./_components/MemberClient";
 import { InviteMember } from "./_components/InviteMember";
+import { redirect } from "next/navigation";
 
 export default async function MembersPage() {
-  const activeMember = await auth.api.getActiveMember({
-    headers: await headers(),
-  });
+  let activeMember;
+  try {
+    activeMember = await auth.api.getActiveMember({
+      headers: await headers(),
+    });
+  } catch (error) {
+    return redirect("/organization");
+  }
   if (!activeMember) return null;
   const isAdmin = activeMember.role === "owner";
 

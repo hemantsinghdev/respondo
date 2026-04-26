@@ -56,3 +56,4 @@ export {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 export { Avatar, AvatarFallback, AvatarImage } from "./avatar";
+export { Checkbox } from "./checkbox";

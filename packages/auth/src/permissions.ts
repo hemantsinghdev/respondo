@@ -8,21 +8,24 @@ import {
 
 const statement = {
   ...defaultStatements,
-  project: ["create", "share", "update", "delete"],
+  ticket: ["create", "share", "update", "delete"],
 } as const;
 
 const ac = createAccessControl(statement);
 
 const owner = ac.newRole({
   ...ownerAc.statements,
+  ticket: ["create", "share", "update", "delete"],
 });
 
 const admin = ac.newRole({
   ...adminAc.statements,
+  ticket: ["create", "share", "update", "delete"],
 });
 
 const member = ac.newRole({
   ...memberAc.statements,
+  ticket: ["create", "share", "update", "delete"],
 });
 
 export { ac, owner, admin, member };

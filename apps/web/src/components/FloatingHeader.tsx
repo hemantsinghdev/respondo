@@ -28,6 +28,11 @@ const TABS_CONFIG = {
   organization: [
     { name: "Basic", href: "/organization", icon: Building2 },
     { name: "Settings", href: "/organization/member-settings", icon: Settings },
+    {
+      name: "Access Control",
+      href: "/organization/access-control",
+      icon: FileCog,
+    },
     { name: "members", href: "/organization/members", icon: Users },
   ],
 } as const;

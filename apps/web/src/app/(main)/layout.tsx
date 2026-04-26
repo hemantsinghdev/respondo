@@ -24,7 +24,7 @@ function SessionChecker({
   useEffect(() => {
     if (!isPending && !session) {
       authClient.signOut();
-      router.push("/login");
+      window.location.href = "/login";
       return;
     }
 

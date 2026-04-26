@@ -8,6 +8,8 @@ import { getGoodbyeLink } from "@app/actions/goodbyeLink";
 
 export default function DeleteAccountSection() {
   const { data: session } = authClient.useSession();
+  const { data: activeMember, error: activeOrgError } =
+    authClient.useActiveMember();
   const { openConfirm } = useConfirmStore();
 
   const handleDeleteAccount = () => {
@@ -19,7 +21,21 @@ export default function DeleteAccountSection() {
       actionLabel: "Permanently Delete",
       confirmText: session?.user.email,
       onConfirm: async () => {
-        if (!session?.user) return;
+        if (!session?.user) {
+          notify.error("session not found");
+          return;
+        }
+        if (activeOrgError) {
+          notify.error(
+            "Unable to fetch Organization Membership Details",
+            activeOrgError.message,
+          );
+          return;
+        }
+        if (activeMember?.role === "owner") {
+          notify.error("Can't Proceed, You are owner of an organization");
+          return;
+        }
         const goodbyeURL = await getGoodbyeLink(
           session?.user.name,
           session?.user.createdAt.toISOString(),

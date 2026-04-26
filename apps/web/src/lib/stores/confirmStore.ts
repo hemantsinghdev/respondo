@@ -31,5 +31,6 @@ export const useConfirmStore = create<ConfirmStore>((set) => ({
   closeConfirm: () =>
     set({
       isOpen: false,
+      confirmText: "",
     }),
 }));

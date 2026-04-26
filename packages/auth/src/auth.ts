@@ -1,4 +1,4 @@
-import { betterAuth, email } from "better-auth";
+import { APIError, betterAuth, email } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { ac, admin, member, owner } from "./permissions";
@@ -56,24 +56,6 @@ export const auth = betterAuth({
           inviteLink,
         });
       },
-      organizationHooks: {
-        beforeDeleteOrganization: async (data) => {
-          const member = await prisma.member.findUnique({
-            where: {
-              userId: data.user.id,
-            },
-            select: { role: true, organizationId: true },
-          });
-          if (
-            !member ||
-            member.organizationId !== data.organization.id ||
-            member.role !== "owner"
-          ) {
-            throw new Error("UNAUTHORIZED");
-          }
-          return;
-        },
-      },
     }),
   ],
   user: {
@@ -88,14 +70,20 @@ export const auth = betterAuth({
           include: { organization: true },
         });
 
-        // If they are the owner of their one-and-only org, delete the org
         if (membership?.role === "owner") {
-          await prisma.organization.delete({
-            where: { id: membership.organizationId },
+          throw new APIError("BAD_REQUEST", {
+            message: "USER_IS_ORGANIZATION_OWNER",
           });
         }
       },
     },
+  },
+  onAPIError: {
+    throw: false,
+    onError: (error, ctx) => {
+      console.error("Auth error:", error);
+    },
+    errorURL: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/error`,
   },
   session: {
     expiresIn: 60 * 60 * 24 * 30, // 30 days

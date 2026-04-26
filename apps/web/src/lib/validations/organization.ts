@@ -28,3 +28,8 @@ export const inviteSchema = z.object({
   email: z.email("Please enter a valid mission-critical email."),
   role: z.string().min(1, "Access level selection is required."),
 });
+
+export const roleSchema = z.object({
+  roleName: z.string().min(2, "Role name must be at least 2 characters"),
+  permissions: z.record(z.string(), z.array(z.string())),
+});
