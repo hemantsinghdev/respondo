@@ -44,11 +44,11 @@ export default function SessionManagementSection() {
   };
 
   const handleRevokeSession = async (token: string) => {
-    const { error } = await authClient.revokeSession({ token });
+    const { data, error } = await authClient.revokeSession({ token });
     if (error) {
       notify.error(error.message || "Failed to terminate session");
     } else {
-      notify.success("Session terminated");
+      notify.success("Session terminated", data.status ? "true" : "false");
       fetchSessions();
     }
   };
@@ -112,7 +112,7 @@ export default function SessionManagementSection() {
 
                   {!isCurrent && (
                     <button
-                      onClick={() => handleRevokeSession(s.id)}
+                      onClick={() => handleRevokeSession(s.token)}
                       className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all opacity-0 group-hover:opacity-100"
                     >
                       <LogOut className="h-4 w-4" />

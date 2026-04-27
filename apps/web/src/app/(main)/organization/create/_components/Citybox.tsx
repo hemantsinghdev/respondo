@@ -14,19 +14,19 @@ import { cn } from "@repo/ui/lib/utils";
 import { useState, useEffect, useCallback } from "react";
 import { debounce } from "lodash";
 
-interface ComboboxProps {
+interface CityboxProps {
   value: string;
   onChange: (city: string, countryCode: string, countryName: string) => void;
   placeholder: string;
   error?: string;
 }
 
-export const Combobox = ({
+export const Citybox = ({
   value,
   onChange,
   placeholder,
   error,
-}: ComboboxProps) => {
+}: CityboxProps) => {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [options, setOptions] = useState<
@@ -59,7 +59,7 @@ export const Combobox = ({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button className="w-full flex items-center justify-between bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white">
+        <button className="w-full flex items-center justify-between bg-black/20 border-white/5 rounded-xl px-4 py-[10px] text-white">
           <span className="truncate">{value || placeholder}</span>
           {loading ? (
             <Loader2 className="animate-spin opacity-50" size={14} />
@@ -120,9 +120,9 @@ export const Combobox = ({
         </Command>
       </PopoverContent>
       {error && (
-        <p className="text-[10px] text-red-500 font-medium mt-1 uppercase">
+        <span className="text-[10px] text-red-400/80 ml-1 leading-tight uppercase tracking-tighter animate-in fade-in slide-in-from-top-1">
           {error}
-        </p>
+        </span>
       )}
     </Popover>
   );

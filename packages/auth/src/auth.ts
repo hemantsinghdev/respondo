@@ -7,6 +7,7 @@ import {
   sendDeleteVerificationEmail,
   sendUserVerificationEmail,
   sendOrganizationInvitationEmail,
+  sendResetPasswordEmail,
 } from "@repo/email/services";
 
 export const auth = betterAuth({
@@ -95,6 +96,10 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      sendResetPasswordEmail(user.name, user.email, url);
+    },
   },
   emailVerification: {
     sendVerificationEmail: async ({ user, url }) => {
