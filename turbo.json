@@ -5,13 +5,20 @@
     "build": {
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "!.next/dev/**"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**", "!.next/dev/**"],
       "env": [
         "DATABASE_URL",
         "APP_URL",
+        "API_URL",
+        "PORT",
+        "NEXT_PUBLIC_APP_URL",
         "BETTER_AUTH_SECRET",
+        "RESPONDO_SENDER_EMAIL",
+        "RESPONDO_SENDER_NAME",
         "GOOGLE_CLIENT_ID",
         "GOOGLE_CLIENT_SECRET",
+        "GITHUB_CLIENT_ID",
+        "GITHUB_CLIENT_SECRET",
         "BREVO_API_KEY"
       ]
     },
