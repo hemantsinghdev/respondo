@@ -89,6 +89,8 @@ model Organization {
 
   email String?
 
+  faqFileUrl String?
+
   @@unique([slug])
   @@map("organization")
 }

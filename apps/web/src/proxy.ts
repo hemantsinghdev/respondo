@@ -7,6 +7,10 @@ export default function authProxy(request: NextRequest) {
   console.log("Proxy has Run Here, and session cookie is", !!sessionCookie);
 
   const hasToken = !!sessionCookie;
+  const isApiRoute = pathname.startsWith("/api");
+  if (isApiRoute) {
+    return NextResponse.next();
+  }
 
   const isAuthPage =
     pathname === "/login" ||

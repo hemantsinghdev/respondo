@@ -1,4 +1,4 @@
-import { APIError, betterAuth, email } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { organization } from "better-auth/plugins";
 import { ac, admin, member, owner } from "./permissions";
@@ -15,12 +15,28 @@ export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: !!process.env.PARENT_DOMAIN,
+      domain: process.env.PARENT_DOMAIN,
+    },
+    defaultCookieAttributes: {
+      sameSite: "lax",
+      secure: true,
+      httpOnly: true,
+    },
+  },
+  trustedOrigins: [process.env.APP_URL!, process.env.API_URL!],
   plugins: [
     organization({
       schema: {
         organization: {
           additionalFields: {
             email: {
+              type: "string",
+              required: false,
+            },
+            faqFileUrl: {
               type: "string",
               required: false,
             },

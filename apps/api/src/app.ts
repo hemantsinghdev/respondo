@@ -8,7 +8,11 @@ const app = Fastify({
   logger: true,
 });
 
-app.register(cors);
+app.register(cors, {
+  origin: process.env.APP_URL!,
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+});
 app.register(helmet);
 
 app.register(dbPlugin);

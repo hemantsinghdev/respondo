@@ -1,6 +1,7 @@
 {
   "extends": "@repo/typescript-config/fastify.json",
   "compilerOptions": {
+    "types": ["node"],
     "rootDir": "./src",
     "outDir": "./dist",
     "paths": {

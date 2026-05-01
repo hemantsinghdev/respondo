@@ -2,7 +2,13 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
-  transpilePackages: ["@repo/ui", "@repo/db", "@repo/auth", "@repo/email"],
+  transpilePackages: [
+    "@repo/ui",
+    "@repo/db",
+    "@repo/auth",
+    "@repo/email",
+    "@repo/storage",
+  ],
 };
 
 export default nextConfig;

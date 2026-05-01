@@ -11,6 +11,7 @@ import {
   User,
   Users,
   FileCog,
+  BrainCircuit,
 } from "@repo/ui/icons";
 import { cn } from "@repo/ui/lib/utils";
 
@@ -33,7 +34,8 @@ const TABS_CONFIG = {
       href: "/organization/access-control",
       icon: FileCog,
     },
-    { name: "members", href: "/organization/members", icon: Users },
+    { name: "Members", href: "/organization/members", icon: Users },
+    { name: "AI Engine", href: "/organization/ai-engine", icon: BrainCircuit },
   ],
 } as const;
 

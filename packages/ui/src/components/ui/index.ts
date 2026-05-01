@@ -1,6 +1,13 @@
 export { Badge } from "./badge";
 export { Button } from "./button";
-export { Card, CardContent } from "./card";
+export {
+  Card,
+  CardContent,
+  CardTitle,
+  CardDescription,
+  CardHeader,
+  CardFooter,
+} from "./card";
 export { Alert, AlertDescription } from "./alert";
 export { Input } from "./input";
 export { Label } from "./label";
@@ -57,3 +64,4 @@ export {
 } from "./dropdown-menu";
 export { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 export { Checkbox } from "./checkbox";
+export { Progress } from "./progress";
