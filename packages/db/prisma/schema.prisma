@@ -86,10 +86,9 @@ model Organization {
   teams             Team[]
   members           Member[]
   invitations       Invitation[]
+  files             File[]
 
   email String?
-
-  faqFileUrl String?
 
   @@unique([slug])
   @@map("organization")
@@ -165,5 +164,31 @@ model Invitation {
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+enum IngestionStatus {
+  NOT_INGESTED
+  QUEUED
+  PARSED
+  EMBEDDED
+  COMPLETED
+  FAILED
+}
+
+model File {
+  id              String        @id
+  organizationId  String
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name            String
+  type            String
+  url             String
+  size            Int
+  lastModified    DateTime?
+  status          IngestionStatus @default(NOT_INGESTED)
+  customId        String?
+  fileHash        String
+
+  @@index([organizationId])
+  @@map("file")
 }
 

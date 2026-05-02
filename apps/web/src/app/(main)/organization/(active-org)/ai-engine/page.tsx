@@ -1,4 +1,4 @@
-import { FAQUploader } from "./_components/FAQUploader";
+import { DocumentsManager } from "./_components/DocumentsManager";
 
 export default function AIEnginePage() {
   return (
@@ -12,16 +12,16 @@ export default function AIEnginePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <FAQUploader />
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+      <DocumentsManager />
 
-        {/* Placeholder for future AI settings (e.g. Tone, SLA strictness) */}
-        <div className="p-6 border border-white/5 rounded-xl bg-white/[0.01] flex items-center justify-center">
+      {/* Placeholder for future AI settings (e.g. Tone, SLA strictness) */}
+      {/* <div className="p-6 border border-white/5 rounded-xl bg-white/[0.01] flex items-center justify-center">
           <p className="text-sm text-slate-500">
             More engine configurations coming soon...
-          </p>
-        </div>
-      </div>
+          </p> */}
+      {/* </div> */}
+      {/* </div> */}
     </div>
   );
 }

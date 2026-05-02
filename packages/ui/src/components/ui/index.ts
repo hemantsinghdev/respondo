@@ -18,6 +18,7 @@ export {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogTrigger,
 } from "./dialog";
 export {
   Popover,

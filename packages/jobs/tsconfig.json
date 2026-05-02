@@ -1,9 +1,8 @@
 {
-  "extends": "@repo/typescript-config/prisma-db.json",
+  "extends": "@repo/typescript-config/base.json",
   "compilerOptions": {
-    "types": ["node"],
     "paths": {
-      "@repo/db": ["./src/"]
+      "@repo/storage/*": ["./src/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "tsup.config.ts"],

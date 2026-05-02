@@ -1,7 +1,6 @@
 import { generateReactHelpers } from "@uploadthing/react";
-import type { fileRouterType } from "./fileRouter";
+import { type fileRouterType } from "@repo/storage/files/server";
 
-// type ReactHelpersType = ReturnType<typeof generateReactHelpers<fileRouterType>>;
 const reactHelper = generateReactHelpers<fileRouterType>();
 
 export const { useUploadThing } = reactHelper;

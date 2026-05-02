@@ -36,10 +36,6 @@ export const auth = betterAuth({
               type: "string",
               required: false,
             },
-            faqFileUrl: {
-              type: "string",
-              required: false,
-            },
           },
         },
       },

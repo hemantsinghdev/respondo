@@ -2,13 +2,14 @@
   "name": "@repo/storage",
   "version": "0.0.0",
   "exports": {
-    "./files/server": "./src/files/server.ts",
-    "./files/client": "./src/files/client.ts"
+    "./files/server": "./src/files/server/index.ts",
+    "./files/client": "./src/files/client/index.ts"
   },
   "scripts": {},
   "packageManager": "pnpm@10.28.1",
   "dependencies": {
     "@repo/auth": "workspace:*",
+    "@repo/db": "workspace:*",
     "@uploadthing/react": "^7.3.3",
     "uploadthing": "^7.7.4"
   },
