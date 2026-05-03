@@ -112,6 +112,7 @@ export const sendOrganizationInvitationEmail = async ({
     </html>
   `;
 
+  console.log("BREVO[SENDING]: Sending Organization Invitation email");
   await brevo.transactionalEmails.sendTransacEmail({
     sender: {
       email: invitedByEmail,

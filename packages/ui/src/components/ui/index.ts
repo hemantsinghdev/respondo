@@ -66,3 +66,9 @@ export {
 export { Avatar, AvatarFallback, AvatarImage } from "./avatar";
 export { Checkbox } from "./checkbox";
 export { Progress } from "./progress";
+export {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./tooltip";

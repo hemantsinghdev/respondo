@@ -16,6 +16,7 @@ import { useFAQUpload } from "../_hooks/useFaqUpload";
 import { notify } from "@app/lib/notify";
 
 interface UploadDocumentDialogProps {
+  activeMember: any;
   activeOrg: any;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
@@ -23,6 +24,7 @@ interface UploadDocumentDialogProps {
 }
 
 export function UploadDocumentDialog({
+  activeMember,
   activeOrg,
   isOpen,
   setIsOpen,
@@ -38,11 +40,10 @@ export function UploadDocumentDialog({
     errorMessage,
     progress,
     handleUpload,
-  } = useFAQUpload(activeOrg, () => {
+  } = useFAQUpload(activeMember, activeOrg, () => {
     setIsOpen(false);
     onUploadSuccess();
   });
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
 

@@ -28,22 +28,59 @@ import { UploadDocumentDialog } from "./UploadDocumentDialog";
 import { fetchFilesAction, deleteFileAction } from "@app/actions/files";
 import { notify } from "@app/lib/notify";
 import { useConfirmStore } from "@app/lib/stores/confirmStore";
+import { fetchRolePermissionsAction } from "@app/actions/accessControl";
+import { RolePermissions } from "@repo/auth/server";
+import { retryIngestionAction } from "@app/actions/knowledge";
 
 export function DocumentsManager() {
   const [loading, setLoading] = useState(true);
   const [filesList, setFilesList] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [retryProcessing, setRetryProcessing] = useState(false);
+  const [permissions, setPermissions] = useState<RolePermissions | null>(null);
   const { openConfirm } = useConfirmStore();
 
+  const { data: activeMember } = authClient.useActiveMember();
   const { data: activeOrg } = authClient.useActiveOrganization();
 
+  const fetchPermissions = async () => {
+    if (!activeMember?.organizationId) return;
+    try {
+      const { data, error } = await fetchRolePermissionsAction(
+        activeMember.organizationId,
+        activeMember.role,
+      );
+      if (error) {
+        notify.error(error);
+      } else {
+        setPermissions(data);
+      }
+    } catch (err) {
+      notify.error("An error occurred fetching permissions");
+    }
+  };
+
+  const can = (category: keyof RolePermissions, action: string): boolean => {
+    const categoryActions = permissions?.[category];
+    return (categoryActions as string[] | undefined)?.includes(action) ?? false;
+  };
+
   const fetchFiles = async () => {
-    if (!activeOrg?.id) return;
+    if (!activeMember?.id) return;
     setLoading(true);
     try {
-      const { data, error } = await fetchFilesAction(activeOrg.id);
+      const { data, error } = await fetchFilesAction(
+        activeMember.organizationId,
+      );
       if (error) {
-        notify.error("Unable to Fetch Files");
+        if (typeof error !== "string") {
+          const message = error.message as string;
+          if (message.includes("does not exist in the current database")) {
+            notify.warning("There Are No Files for this organization");
+          }
+        } else {
+          notify.error("Unable to Fetch Files");
+        }
       } else {
         setFilesList(data || []);
       }
@@ -55,10 +92,13 @@ export function DocumentsManager() {
   };
 
   useEffect(() => {
-    if (activeOrg?.id) {
+    if (activeMember?.id) {
       fetchFiles();
     }
-  }, [activeOrg]);
+  }, [activeMember]);
+  useEffect(() => {
+    fetchPermissions();
+  }, [activeMember]);
 
   const handleDelete = async (fileId: string) => {
     openConfirm({
@@ -144,13 +184,15 @@ export function DocumentsManager() {
                 className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
               />
             </Button>
-
-            <UploadDocumentDialog
-              activeOrg={activeOrg}
-              isOpen={isDialogOpen}
-              setIsOpen={setIsDialogOpen}
-              onUploadSuccess={fetchFiles}
-            />
+            {can("document", "upload") && (
+              <UploadDocumentDialog
+                activeMember={activeMember}
+                activeOrg={activeOrg}
+                isOpen={isDialogOpen}
+                setIsOpen={setIsDialogOpen}
+                onUploadSuccess={fetchFiles}
+              />
+            )}
           </div>
         </CardHeader>
 
@@ -205,25 +247,33 @@ export function DocumentsManager() {
                         <div className="flex">
                           {getStatusBadge(file.status)}
                           {(file.status === "FAILED" ||
-                            file.status === "NOT_INGESTED") && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              title="Retry Ingestion"
-                              className="h-8 w-8 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
-                              // onClick={async () => {
-                              //   const res = await retryIngestionAction(file.id);
-                              //   if (res.success) {
-                              //     notify.success("File queued for ingestion!");
-                              //     fetchFiles(); // Reload the table data
-                              //   } else {
-                              //     notify.error(res.error || "Retry failed.");
-                              //   }
-                              // }}
-                            >
-                              <RefreshCw className="w-3.5 h-3.5" />
-                            </Button>
-                          )}
+                            file.status === "NOT_INGESTED") &&
+                            can("document", "upload") && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                title="Retry Ingestion"
+                                className="h-8 w-8 text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10"
+                                disabled={retryProcessing}
+                                onClick={async () => {
+                                  setRetryProcessing(true);
+                                  const res = await retryIngestionAction(
+                                    file.id,
+                                  );
+                                  if (res.success) {
+                                    notify.success(
+                                      "File queued for ingestion!",
+                                    );
+                                    fetchFiles(); // Reload the table data
+                                  } else {
+                                    notify.error(res.error || "Retry failed.");
+                                  }
+                                  setRetryProcessing(false);
+                                }}
+                              >
+                                <RefreshCw className="w-3.5 h-3.5" />
+                              </Button>
+                            )}
                         </div>
                       </TableCell>
                       <TableCell className="text-right">

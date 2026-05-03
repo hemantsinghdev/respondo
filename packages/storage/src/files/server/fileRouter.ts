@@ -6,6 +6,7 @@ import {
 } from "uploadthing/server";
 import { auth } from "@repo/auth/server";
 import { createFile } from "@repo/db/services";
+import { fetchRolePermissions } from "./utils/fetchRolePermissions";
 
 export const utapi = new UTApi();
 
@@ -29,7 +30,23 @@ export const fileRouter: FileRouter = {
       if (!activeMember) {
         throw new UploadThingError("No Active Organization Member found.");
       }
-      console.log("UPLOADTHING[MIDDLEWARE]:organization is found!!!");
+
+      const { data: permissions, error } = await fetchRolePermissions(
+        activeMember.organizationId,
+        activeMember.role,
+      );
+      if (error) {
+        throw new UploadThingError(error);
+      }
+
+      if (!permissions?.document?.includes("upload")) {
+        throw new UploadThingError(
+          "Member doesn't have the permissions to upload files",
+        );
+      }
+      console.log(
+        "UPLOADTHING[MIDDLEWARE]:organization and member role checked!!!",
+      );
 
       return { activeOrganizationId: activeMember.organizationId };
     })
@@ -49,10 +66,11 @@ export const fileRouter: FileRouter = {
       if (error) {
         console.error(
           "UPLOADTHING[COMPLETED] Database insert failed, cleaning up UploadThing file:",
+          error.message,
           file.key,
         );
         await utapi.deleteFiles(file.key);
-        throw new UploadThingError(error.message);
+        throw new Error(error.message);
       }
 
       console.log(

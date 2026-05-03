@@ -1,0 +1,1 @@
+export { processChunksForVectorDB } from "./embedding";

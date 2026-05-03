@@ -8,16 +8,34 @@ export function createIngestionWorker(
   const worker = new Worker<IngestionJobData>(
     INGESTION_QUEUE_NAME,
     async (job: Job<IngestionJobData>) => {
-      console.log(`[JOBS]: Starting processing for file: ${job.data.fileId}`);
-      await processFn(job.data);
-      console.log(`[JOBS]: Success processing file: ${job.data.fileId}`);
+      const { fileId, organizationId } = job.data;
+
+      console.log(
+        `[JOBS]: Processing file ${fileId} for Org ${organizationId}`,
+      );
+
+      try {
+        await processFn(job.data);
+      } catch (error) {
+        console.error(`[JOBS]: Processing failed for ${fileId}:`, error);
+        throw error; // Let BullMQ handle the retry
+      }
     },
-    { connection: redisConnection },
+    {
+      connection: redisConnection,
+      concurrency: 5, // Process 5 files at a time (adjust based on your RAM/CPU)
+    },
   );
 
   worker.on("failed", (job, err) => {
-    console.error(`[JOBS]: Job ${job?.id} failed with error: ${err.message}`);
+    console.error(`[JOBS]: Job ${job?.id} failed: ${err.message}`);
   });
 
-  return worker;
+  // Graceful shutdown helper
+  const shutdown = async () => {
+    console.log("[JOBS]: Closing worker...");
+    await worker.close();
+  };
+
+  return { worker, shutdown };
 }

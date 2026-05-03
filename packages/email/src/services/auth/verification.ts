@@ -66,6 +66,7 @@ export const sendUserVerificationEmail = async (
     </html>
   `;
 
+  console.log("BREVO[SENDING]: Sending user verification email");
   await brevo.transactionalEmails.sendTransacEmail({
     sender: {
       email: process.env.RESPONDO_SENDER_EMAIL,
@@ -142,6 +143,7 @@ export const sendDeleteVerificationEmail = async (
     </html>
   `;
 
+  console.log("BREVO[SENDING]: Sending Delete User Verification email");
   await brevo.transactionalEmails.sendTransacEmail({
     sender: {
       email: process.env.RESPONDO_SENDER_EMAIL,

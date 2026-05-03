@@ -24,3 +24,10 @@ export const ingestionQueue = new Queue<IngestionJobData>(
     },
   },
 );
+
+export async function enqueueIngestion(data: IngestionJobData) {
+  // Use fileId as the jobId to prevent duplicate active jobs for the same file
+  return ingestionQueue.add(`ingest_${data.fileId}`, data, {
+    jobId: data.fileId,
+  });
+}

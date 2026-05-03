@@ -67,6 +67,7 @@ export const sendResetPasswordEmail = async (
     </html>
   `;
 
+  console.log("BREVO[SENDING]: Sending forgot password email");
   await brevo.transactionalEmails.sendTransacEmail({
     sender: {
       email: process.env.RESPONDO_SENDER_EMAIL,

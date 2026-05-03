@@ -1,4 +1,4 @@
-import { prisma } from "@repo/db";
+import { IngestionStatus, prisma } from "@repo/db";
 
 interface CreateFileInput {
   key: string;
@@ -92,6 +92,55 @@ export async function deleteFileFromDb(id: string) {
         message: err.message || "Failed to delete file record from database.",
         code: "DB_DELETE_ERROR",
       },
+    };
+  }
+}
+
+export async function fileExistsInOrganization(
+  fileId: string,
+  organizationId: string,
+) {
+  try {
+    const count = await prisma.file.count({
+      where: {
+        id: fileId,
+        organizationId: organizationId,
+      },
+    });
+
+    return {
+      exists: count > 0,
+      error: null,
+    };
+  } catch (err: any) {
+    console.error("[DB_CHECK_ERROR]:", err);
+    return {
+      exists: false,
+      error: {
+        message: "An error occurred while verifying file ownership.",
+        code: "DB_CHECK_ERROR",
+      },
+    };
+  }
+}
+
+export async function updateFileStatus(
+  fileId: string,
+  status: IngestionStatus,
+) {
+  try {
+    await prisma.$executeRaw`UPDATE "file" SET "status" = ${status}::"IngestionStatus" WHERE "id" = ${fileId}`;
+
+    return { success: true, error: null };
+  } catch (error: any) {
+    console.error(
+      `[DB_STATUS_UPDATE_ERROR]: Failed to set ${fileId} to ${status}`,
+      error,
+    );
+
+    return {
+      success: false,
+      error: error.message || "Failed to update file status",
     };
   }
 }

@@ -1,44 +1,44 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider   = "postgresql"
+  extensions = [vector]
 }
 
 model User {
   id            String       @id
   name          String
-  email         String
+  email         String       @unique
   emailVerified Boolean      @default(false)
   image         String?
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
-  sessions      Session[]
   accounts      Account[]
-  teammembers   TeamMember[]
-  members       Member[]
   invitations   Invitation[]
+  members       Member?
+  sessions      Session[]
+  teammembers   TeamMember[]
 
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id                   String   @id
   expiresAt            DateTime
-  token                String
+  token                String   @unique
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
   ipAddress            String?
   userAgent            String?
   userId               String
-  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   activeOrganizationId String?
   activeTeamId         String?
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -48,7 +48,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -58,6 +57,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -78,31 +78,31 @@ model Verification {
 model Organization {
   id                String             @id
   name              String
-  slug              String
+  slug              String             @unique
   logo              String?
   createdAt         DateTime
   metadata          String?
+  email             String?
+  documentchunks    DocumentChunk[]
+  files             File[]
+  invitations       Invitation[]
+  members           Member[]
   organizationroles OrganizationRole[]
   teams             Team[]
-  members           Member[]
-  invitations       Invitation[]
-  files             File[]
 
-  email String?
-
-  @@unique([slug])
   @@map("organization")
 }
 
 model OrganizationRole {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   role           String
   permission     String
   createdAt      DateTime     @default(now())
   updatedAt      DateTime?    @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
+  @@unique([organizationId, role], name: "orgRoleIdentifier")
   @@index([organizationId])
   @@index([role])
   @@map("organizationRole")
@@ -112,9 +112,9 @@ model Team {
   id             String       @id
   name           String
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   createdAt      DateTime
   updatedAt      DateTime?    @updatedAt
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   teammembers    TeamMember[]
 
   @@index([organizationId])
@@ -124,10 +124,10 @@ model Team {
 model TeamMember {
   id        String    @id
   teamId    String
-  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime?
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([teamId])
   @@index([userId])
@@ -137,11 +137,11 @@ model TeamMember {
 model Member {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   userId         String       @unique
-  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   role           String       @default("member")
   createdAt      DateTime
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([userId])
@@ -151,19 +151,57 @@ model Member {
 model Invitation {
   id             String       @id
   organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
   email          String
   role           String?
-  teamId         String?
   status         String       @default("pending")
   expiresAt      DateTime
   createdAt      DateTime     @default(now())
   inviterId      String
+  teamId         String?
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@index([organizationId])
   @@index([email])
   @@map("invitation")
+}
+
+model File {
+  id             String          @id
+  organizationId String
+  name           String
+  type           String
+  url            String
+  size           Int
+  lastModified   DateTime?
+  customId       String?
+  fileHash       String          @unique
+  status         IngestionStatus @default(NOT_INGESTED)
+  chunks         DocumentChunk[]
+  organization   Organization    @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@map("file")
+}
+
+model DocumentChunk {
+  id                 String                   @id @default(cuid())
+  title              String
+  content            String
+  keywords           String[]
+  suggestedQuestions String[]
+  embedding          Unsupported("vector")
+  fileId             String
+  organizationId     String
+  contenttokens      Unsupported("tsvector")? @default(dbgenerated("(setweight(to_tsvector('english'::regconfig, COALESCE(title, ''::text)), 'A'::\"char\") || setweight(to_tsvector('english'::regconfig, COALESCE(content, ''::text)), 'B'::\"char\"))"))
+  file               File                     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  organization       Organization             @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([fileId])
+  @@index([contenttokens], map: "content_search_idx", type: Gin)
+  @@index([embedding], map: "embedding_hnsw_idx")
+  @@map("document_chunks")
 }
 
 enum IngestionStatus {
@@ -174,21 +212,3 @@ enum IngestionStatus {
   COMPLETED
   FAILED
 }
-
-model File {
-  id              String        @id
-  organizationId  String
-  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  name            String
-  type            String
-  url             String
-  size            Int
-  lastModified    DateTime?
-  status          IngestionStatus @default(NOT_INGESTED)
-  customId        String?
-  fileHash        String
-
-  @@index([organizationId])
-  @@map("file")
-}
-

@@ -1,5 +1,12 @@
 import Redis from "ioredis";
 
-export const redisConnection = new Redis(process.env.REDIS_URL!, {
+const redisUrl = process.env.REDIS_URL;
+
+if (!redisUrl) {
+  throw new Error("[JOBS] REDIS_URL is not defined in environment variables");
+}
+
+export const redisConnection = new Redis(redisUrl, {
   maxRetriesPerRequest: null,
+  enableReadyCheck: false,
 });

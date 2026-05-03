@@ -3,7 +3,7 @@ import {
   inferOrgAdditionalFields,
   organizationClient,
 } from "better-auth/client/plugins";
-import { ac, admin, member, owner } from "./permissions";
+import { ac, admin, member, owner, type RolePermissions } from "./permissions";
 import { auth } from "./auth";
 
 export const authClient = createAuthClient({
@@ -22,3 +22,16 @@ export const authClient = createAuthClient({
     }),
   ],
 });
+
+//Defines the Default Roles
+export const defaultRoles = ["member", "admin", "owner"] as const;
+export type DefaultRole = (typeof defaultRoles)[number];
+
+//Defines the structure of permissions/statements inside role
+export type { RolePermissions };
+
+export const defaultRolePermissions: Record<DefaultRole, RolePermissions> = {
+  owner: owner.statements,
+  member: member.statements,
+  admin: admin.statements,
+};

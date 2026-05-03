@@ -4,7 +4,11 @@ import { notify } from "@app/lib/notify";
 
 export type UploadStatus = "idle" | "uploading" | "success" | "error";
 
-export function useFAQUpload(activeOrg: any, onComplete?: () => void) {
+export function useFAQUpload(
+  activeMember: any,
+  activeOrg: any,
+  onComplete?: () => void,
+) {
   const [files, setFiles] = useState<File[]>([]);
   const [status, setStatus] = useState<UploadStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -13,7 +17,7 @@ export function useFAQUpload(activeOrg: any, onComplete?: () => void) {
   const { startUpload } = useUploadThing("file", {
     onUploadProgress: (p) => setProgress(Math.floor(p * 0.95)),
     onClientUploadComplete: async (res) => {
-      if (!res || res.length === 0 || !activeOrg) {
+      if (!res || res.length === 0 || !activeMember) {
         handleFailure("Upload failed: No response from server");
         return;
       }
@@ -46,7 +50,11 @@ export function useFAQUpload(activeOrg: any, onComplete?: () => void) {
   };
 
   const handleUpload = async () => {
-    if (files.length === 0 || !activeOrg || status !== "idle") return;
+    if (activeMember.role !== "owner") {
+      notify.warning("You don't have Permissions to Upload Files");
+      return;
+    }
+    if (files.length === 0 || status !== "idle") return;
 
     setStatus("uploading");
 
