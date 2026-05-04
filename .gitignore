@@ -1,14 +1,13 @@
 # Dependencies
 node_modules
+jspm_packages
+web_modules
 .pnp
 .pnp.js
 
 # Local env files
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
+!.env.example
 
 # Testing
 coverage
@@ -25,11 +24,26 @@ out/
 build
 dist
 
-# Debug
+# Debug / Logs
+logs
+_.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# wrangler project
+.dev.vars*
+!.dev.vars.example
+.wrangler/
 
 # Misc
 .DS_Store
 *.pem
+
+# Runtime data
+pids
+_.pid
+_.seed
+\*.pid.lock

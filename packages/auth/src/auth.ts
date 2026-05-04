@@ -34,7 +34,7 @@ export const auth = betterAuth({
           additionalFields: {
             email: {
               type: "string",
-              required: false,
+              required: true,
             },
           },
         },

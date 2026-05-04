@@ -7,11 +7,11 @@ export async function documentParser(fileUrl: string) {
     response.arrayBuffer(),
   );
 
-  const model = "gemini-1.5-flash";
+  const model = "models/gemini-2.5-flash";
 
   const contents = [
     {
-      text: "Parse this helpdesk document into logical chunks for vector embeddings by BAAI/bge.",
+      text: "Parse this helpdesk document into logical chunks for vector embeddings.",
     },
     {
       inlineData: {
@@ -21,16 +21,14 @@ export async function documentParser(fileUrl: string) {
     },
   ];
 
-  const config = {
-    responseMimeType: "application/json",
-    responseSchema: z.toJSONSchema(documentSchema),
-  };
-
   try {
     const response = await gemini.models.generateContent({
       model,
       contents,
-      config,
+      config: {
+        responseMimeType: "application/json",
+        responseJsonSchema: z.toJSONSchema(documentSchema),
+      },
     });
 
     const chunkData = documentSchema.parse(JSON.parse(response.text ?? ""));
@@ -38,7 +36,7 @@ export async function documentParser(fileUrl: string) {
     console.log("[GEMINI] Successfully parsed the data\nData: \n", chunkData);
     return { data: chunkData, error: null };
   } catch (error) {
-    console.error("[GEMINI] Error While Parsing the data : ", error);
+    console.error("[GEMINI] Error While Parsing the data");
     return { data: null, error: error };
   }
 }

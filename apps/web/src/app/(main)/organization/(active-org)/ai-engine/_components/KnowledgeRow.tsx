@@ -19,9 +19,9 @@ export function KnowledgeRow({
   onDelete,
   deleteAllowed,
 }: any) {
-  const previewVector = chunk.embeddingString
-    ? `${chunk.embeddingString.substring(0, 30)}...`
-    : "[No Vector Data]";
+  const preview = (str: string, length: number) => {
+    return `${str.substring(0, length)}...`;
+  };
 
   const copyToClipboard = (e: React.MouseEvent, text: string) => {
     e.stopPropagation();
@@ -76,7 +76,7 @@ export function KnowledgeRow({
                   onClick={(e) => e.stopPropagation()}
                 >
                   <code className="text-[10px] text-cyan-500/70 bg-cyan-500/5 px-2 py-1 rounded border border-cyan-500/10 truncate font-mono">
-                    {previewVector}
+                    {preview(chunk.embeddingString, 30)}
                   </code>
                 </div>
               </TooltipTrigger>
@@ -98,7 +98,7 @@ export function KnowledgeRow({
                       Copy All
                     </Button>
                   </div>
-                  <div className="text-[10px] font-mono text-slate-300 leading-relaxed break-all max-h-[200px] overflow-y-auto custom-scrollbar">
+                  <div className="text-[10px] font-mono text-slate-300 leading-relaxed break-all max-h-[200px] overflow-y-auto ms-overflow-style-none [scrollbar-width:none] [&::-webkit-scrollbar]:display-none">
                     {chunk.embeddingString}
                   </div>
                 </div>
@@ -131,12 +131,12 @@ export function KnowledgeRow({
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="p-4 flex flex-col gap-3">
                   <div className="md:col-span-2 space-y-3">
                     <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-2">
-                      <Hash className="w-3 h-3" /> Raw Content
+                      <Hash className="w-3 h-3" /> {chunk.title}
                     </h4>
-                    <div className="text-sm text-slate-300 leading-relaxed bg-black/40 p-4 rounded-lg border border-white/5">
+                    <div className="text-sm text-slate-300 leading-relaxed bg-black/40 p-4 rounded-lg border border-white/5 whitespace-pre-wrap break-words">
                       {chunk.content}
                     </div>
                   </div>
@@ -145,12 +145,12 @@ export function KnowledgeRow({
                       <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">
                         Suggested Questions
                       </h4>
-                      <div className="space-y-2">
+                      <div className="flex flex-col items-start gap-2">
                         {chunk.suggestedQuestions.map(
                           (q: string, i: number) => (
                             <div
                               key={i}
-                              className="text-xs text-cyan-400 bg-cyan-500/5 p-2 rounded border border-cyan-500/10"
+                              className="text-xs text-cyan-400 bg-cyan-500/5 p-2 rounded border border-cyan-500/10 inline-block"
                             >
                               "{q}"
                             </div>
@@ -164,7 +164,48 @@ export function KnowledgeRow({
                       </h4>
                       <div className="text-[11px] text-slate-500 space-y-1">
                         <p>Chunk ID: {chunk.id}</p>
-                        <p>File Link: {chunk.fileId}</p>
+                        <div>
+                          <TooltipProvider delayDuration={100}>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <div
+                                  className="flex items-center gap-2 cursor-help"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Content Tokens
+                                  <code className="text-[9px] text-cyan-500/70 bg-cyan-500/5 px-2 py-1 rounded border border-cyan-500/10 truncate font-mono">
+                                    {preview(chunk.contentTokens, 100)}
+                                  </code>
+                                </div>
+                              </TooltipTrigger>
+                              <TooltipContent
+                                side="top"
+                                className="max-w-md p-0 bg-[#141414] border-white/10 shadow-2xl"
+                              >
+                                <div className="p-3 space-y-2">
+                                  <div className="flex items-center justify-between border-b border-white/5 pb-2">
+                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">
+                                      Raw Content Token Vector
+                                    </span>
+                                    <Button
+                                      size="sm"
+                                      variant="ghost"
+                                      className="h-6 px-2 text-[10px] text-cyan-400 hover:bg-cyan-400/10"
+                                      onClick={(e) =>
+                                        copyToClipboard(e, chunk.contentTokens)
+                                      }
+                                    >
+                                      Copy All
+                                    </Button>
+                                  </div>
+                                  <div className="text-[10px] font-mono text-slate-300 leading-relaxed break-all max-h-[200px] overflow-y-auto ms-overflow-style-none [scrollbar-width:none] [&::-webkit-scrollbar]:display-none">
+                                    {chunk.contentTokens}
+                                  </div>
+                                </div>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
                       </div>
                     </div>
                   </div>

@@ -50,6 +50,16 @@ export default async function OrganizationPage() {
             })}
           </p>
         </div>
+
+        <div className="rounded-2xl border border-white/5 bg-[#0D0D0D] p-6 hover:border-white/10 transition-all">
+          <div className="mb-3 flex items-center gap-2 text-slate-500">
+            <Calendar className="h-4 w-4 text-cyan-400" />
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em]">
+              Organization Email
+            </span>
+          </div>
+          <p className="text-lg font-medium text-white">{org.email}</p>
+        </div>
         {metadata.website && (
           <div className="rounded-2xl border border-white/5 bg-[#0D0D0D] p-6 hover:border-blue-500/30 transition-all group">
             <div className="mb-3 flex items-center gap-2 text-slate-500">

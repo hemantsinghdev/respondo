@@ -1,4 +1,5 @@
 import { prisma } from "@repo/db";
+import { createId } from "@paralleldrive/cuid2";
 
 type Chunk = {
   vector: any;
@@ -21,6 +22,7 @@ export async function saveDocumentChunks(
       const vectorString = `[${vector.join(",")}]`;
 
       return {
+        id: createId(),
         title: metadata.title,
         content: metadata.content,
         keywords: metadata.keywords,
@@ -31,20 +33,28 @@ export async function saveDocumentChunks(
 
     //Perform the Bulk Insert using a Transaction & Raw Query
     await prisma.$transaction(
-      values.map((v) =>
-        prisma.$executeRawUnsafe(
-          `INSERT INTO "document_chunks" 
-           ("title", "content", "keywords", "suggestedQuestions", "embedding", "fileId", "organizationId") 
-           VALUES 
-           ($1, $2, $3, $4, $5::vector, $6, $7)`,
-          v.title,
-          v.content,
-          v.keywords,
-          v.questions,
-          v.embedding,
-          fileId,
-          organizationId,
-        ),
+      values.map(
+        (v) =>
+          prisma.$executeRaw`INSERT INTO "document_chunks" (
+          "id",
+          "title",
+          "content", 
+          "keywords", 
+          "suggestedQuestions", 
+          "embedding", 
+          "fileId", 
+          "organizationId"
+        )
+        VALUES (
+          ${v.id}, 
+          ${v.title}, 
+          ${v.content}, 
+          ${v.keywords}, 
+          ${v.questions}, 
+          ${v.embedding}::vector,
+          ${fileId}, 
+          ${organizationId}
+        )`,
       ),
     );
 
@@ -58,20 +68,19 @@ export async function saveDocumentChunks(
 
 export async function getDocumentChunks(organizationId: string) {
   try {
-    // We use queryRaw because findMany ignores "Unsupported" types like vector
-    // We cast the embedding to text so it's readable as a string
     const chunks = await prisma.$queryRaw`
       SELECT 
         dc.id, 
         dc.title, 
         dc.content, 
-        dc.keywords, 
-        dc."suggestedQuestions", 
+        dc.keywords,
+        dc."suggestedQuestions",
+        dc.contenttokens::text as "contentTokens", 
         dc.embedding::text as "embeddingString", 
         dc."fileId",
         f.name as "fileName"
       FROM "document_chunks" dc
-      JOIN "File" f ON dc."fileId" = f.id
+      JOIN "file" f ON dc."fileId" = f.id
       WHERE dc."organizationId" = ${organizationId}
       ORDER BY dc.title ASC
     `;

@@ -1,4 +1,5 @@
 import { DocumentsManager } from "./_components/DocumentsManager";
+import { KnowledgeBaseManager } from "./_components/KnowledgeBaseManager";
 
 export default function AIEnginePage() {
   return (
@@ -14,6 +15,7 @@ export default function AIEnginePage() {
 
       {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
       <DocumentsManager />
+      <KnowledgeBaseManager />
 
       {/* Placeholder for future AI settings (e.g. Tone, SLA strictness) */}
       {/* <div className="p-6 border border-white/5 rounded-xl bg-white/[0.01] flex items-center justify-center">

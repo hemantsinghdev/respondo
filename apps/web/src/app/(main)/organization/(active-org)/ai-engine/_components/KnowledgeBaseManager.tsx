@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { authClient } from "@repo/auth/client";
-import { Database, Loader2 } from "@repo/ui/icons";
+import { Database, Loader2, RefreshCw } from "@repo/ui/icons";
 import {
   Card,
   CardContent,
@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
   Badge,
+  Button,
 } from "@repo/ui/components";
 import {
   fetchKnowledgeBaseAction,
@@ -109,12 +110,25 @@ export function KnowledgeBaseManager() {
               Granular view of the vectorized data stored in the AI engine.
             </CardDescription>
           </div>
-          <Badge
-            variant="outline"
-            className="border-cyan-500/30 text-cyan-400 bg-cyan-500/5"
-          >
-            {chunks.length} Total Chunks
-          </Badge>
+          <div className="flex items-center justify-center">
+            <Badge
+              variant="outline"
+              className="border-cyan-500/30 text-cyan-400 bg-cyan-500/5"
+            >
+              {chunks.length} Total Chunks
+            </Badge>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-slate-400 hover:text-white hover:bg-white/5"
+              onClick={loadData}
+              disabled={loading}
+            >
+              <RefreshCw
+                className={`w-4 h-4 ${loading ? "animate-spin" : ""}`}
+              />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -133,18 +147,20 @@ export function KnowledgeBaseManager() {
           </div>
         ) : (
           <div className="rounded-md border border-white/5 overflow-hidden">
-            <Table>
+            <Table className="table-fixed w-full">
               <TableHeader className="bg-white/[0.02]">
                 <TableRow className="border-white/5">
-                  <TableHead className="w-10"></TableHead>
-                  <TableHead className="text-slate-300">
+                  <TableHead className="w-[5%]"></TableHead>
+                  <TableHead className="w-[40%] text-slate-300">
                     Title & Origin
                   </TableHead>
-                  <TableHead className="text-slate-300">Keywords</TableHead>
-                  <TableHead className="text-slate-300">
+                  <TableHead className="w-[25%] text-slate-300">
+                    Keywords
+                  </TableHead>
+                  <TableHead className="w-[20%] text-slate-300">
                     Vector Embedding
                   </TableHead>
-                  <TableHead className="text-right text-slate-300">
+                  <TableHead className="w-[10%] text-right text-slate-300">
                     Action
                   </TableHead>
                 </TableRow>

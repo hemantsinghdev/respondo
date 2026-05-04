@@ -266,7 +266,7 @@ export function DocumentsManager() {
                                     );
                                     fetchFiles(); // Reload the table data
                                   } else {
-                                    notify.error(res.error || "Retry failed.");
+                                    notify.error("Ingestion Retry failed.");
                                   }
                                   setRetryProcessing(false);
                                 }}

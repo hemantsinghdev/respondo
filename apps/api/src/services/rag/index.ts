@@ -25,6 +25,7 @@ export default async function processIngestion(jobData: IngestionJobData) {
       });
     }
 
+    console.log("[RAG] Parsing the file");
     const { data: parseData, error: parseError } =
       await documentParser(fileUrl);
     if (parseError || !parseData) {
@@ -34,6 +35,7 @@ export default async function processIngestion(jobData: IngestionJobData) {
     }
     await updateFileStatus(fileId, "PARSED");
 
+    console.log("[RAG] Embedding the vectors.");
     const { data: chunkData, error: embeddingError } =
       await processChunksForVectorDB(parseData);
     if (embeddingError || !chunkData) {
@@ -43,6 +45,7 @@ export default async function processIngestion(jobData: IngestionJobData) {
     }
     await updateFileStatus(fileId, "EMBEDDED");
 
+    console.log("[RAG] Saving in the database.");
     const { success, error: savingError } = await saveDocumentChunks(
       chunkData,
       fileId,

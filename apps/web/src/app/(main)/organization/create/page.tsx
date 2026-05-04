@@ -111,6 +111,7 @@ export default function CreateOrganization() {
       name: data.name,
       slug: data.slug,
       metadata: { ...data },
+      email: `${data.slug}@${process.env.BASE_EMAIL_DOMAIN}`,
     });
 
     if (error) {

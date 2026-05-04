@@ -5,8 +5,10 @@ import {
   type FileRouter,
 } from "uploadthing/server";
 import { auth } from "@repo/auth/server";
-import { createFile } from "@repo/db/services";
+import { createFile, updateFileStatus } from "@repo/db/services";
 import { fetchRolePermissions } from "./utils/fetchRolePermissions";
+import { enqueueIngestion } from "@repo/jobs";
+import { waitUntil } from "@vercel/functions";
 
 export const utapi = new UTApi();
 
@@ -76,6 +78,31 @@ export const fileRouter: FileRouter = {
       console.log(
         "UPLOADTHING[COMPLETED] File successfully saved to database!",
       );
+
+      try {
+        await enqueueIngestion({
+          fileId: data.id,
+          fileUrl: data.url,
+          organizationId: data.organizationId,
+        });
+
+        await updateFileStatus(data.id, "QUEUED");
+
+        waitUntil(
+          fetch(`${process.env.API_URL}/ping`)
+            .then((res) => console.log("[NEXT API] Awaken the server", res))
+            .catch((error) =>
+              console.error("Failed to awake the server", error),
+            ),
+        );
+      } catch (error) {
+        console.error(
+          "UPLOADTHING[JOBS] Failed to enqueue the file for ingestion",
+        );
+        throw new UploadThingError(
+          `Failed to enqueue the file for ingestion: ${error as string}`,
+        );
+      }
 
       return {
         fileId: data.id,

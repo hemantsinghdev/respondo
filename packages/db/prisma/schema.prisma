@@ -82,7 +82,7 @@ model Organization {
   logo              String?
   createdAt         DateTime
   metadata          String?
-  email             String?
+  email             String
   documentchunks    DocumentChunk[]
   files             File[]
   invitations       Invitation[]

@@ -23,7 +23,10 @@ export function createIngestionWorker(
     },
     {
       connection: redisConnection,
-      concurrency: 5, // Process 5 files at a time (adjust based on your RAM/CPU)
+      concurrency: 1, // Process 5 files at a time (adjust based on your RAM/CPU)
+      drainDelay: 30000,
+      stalledInterval: 300000,
+      lockDuration: 60000,
     },
   );
 
